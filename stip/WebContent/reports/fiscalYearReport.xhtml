@@ -1,0 +1,217 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:c="http://java.sun.com/jstl/core"
+    template="/layout/template.xhtml">
+    
+    <a:keepAlive beanName="dataScrollerSummary" ajaxOnly="true"/>
+ <ui:define name="head">
+    <style type="text/css">
+        .rich-messages-marker img {padding-right:7px;}
+        .rich-message-label {color:red;}
+        .top {vertical-align:top;}
+        .warnClass {display: none;}
+        .infoClass {display: green;}
+        .errorClass {color: red;}
+    </style>
+ 
+ </ui:define>
+ <ui:define name="body">    	 
+    <h:form id="fiscalYrptForm"> 
+    
+    <rich:messages layout="list" infoClass="infoClass" warnClass="warnClass" errorClass="errorClass">
+          <f:facet name="header">
+              <h:outputText value="Entered Data Status:"></h:outputText>
+          </f:facet>
+          <f:facet name="errorMarker">
+              <h:graphicImage value="/img/error.gif" />   
+          </f:facet>
+          <f:facet name="infoMarker">
+              <h:graphicImage value="/img/msginfo.png" />   
+          </f:facet>
+	  </rich:messages>
+	     
+	   <h:outputText value="No Fiscal Year found to generate Fiscal Year report" style="color:green;font-weight:bold;font-size:20px;" rendered="#{empty fiscalYearRptList.fiscalYearList}"/>
+	  
+	   <s:decorate id="selectYearDecId" template="/layout/edit.xhtml" 
+	   			   rendered="#{not empty fiscalYearRptList.fiscalYearList}">
+		 <ui:define name="label">
+		 		   <h:outputText value="Select Fiscal Year" />
+		 </ui:define>
+           <h:selectOneMenu id="selectYearId" value="#{fiscalYearRptList.selectedFiscalYear}">
+       		<s:selectItems value="#{fiscalYearRptList.fiscalYearList}" 
+       					   var="year" label="#{year}" itemValue="#{year}" noSelectionLabel="Select Year..."/>
+       		<a:support event="onchange"
+				         reRender="selectDeptDecId,selectDeptId,deptLabelId,fiscalYrptForm">
+	   		  </a:support>
+            </h:selectOneMenu>
+       </s:decorate>
+       
+        <s:decorate id="selectDeptDecId" template="/layout/edit.xhtml" 
+        			rendered="#{not empty fiscalYearRptList.majorGrouplist}">
+		 <ui:define name="label">
+		   <h:outputText id="deptLabelId" value="Select Department"/>
+		 </ui:define>
+           <h:selectOneMenu id="selectDeptId"  value="#{fiscalYearRptList.fiscalYearRpt.majorGroup}" >
+       		<s:selectItems value="#{fiscalYearRptList.majorGrouplist}" var="dept" label="#{dept}" itemValue="#{dept}"
+       							 noSelectionLabel="All Departments"  />
+            </h:selectOneMenu>
+       </s:decorate>
+       
+       <!--  <s:decorate id="selectDivisionDecId" template="/layout/edit.xhtml" 
+        			rendered="#{fiscalYearRptList.fiscalYearRpt.majorGroup eq '' or }">
+		 <ui:define name="label">
+		   <h:outputText value="Select Division"/>
+		 </ui:define>
+           <h:selectOneMenu id="selectDivId"  value="#{fiscalYearRptList.fiscalYearRpt.department}" >
+       		<s:selectItems value="#{fiscalYearRptList.divisionList}" var="div" label="#{div}" itemValue="#{div}"
+       							 noSelectionLabel="Select Division"  />
+            </h:selectOneMenu>
+       </s:decorate> -->
+       
+	  <br /> <br /> <br /> <br /> <br /> 
+	  <a:commandButton value="Generate Report" reRender="fiscalYrptForm" rendered="#{not empty fiscalYearRptList.fiscalYearList}"/>
+	  <s:button value="Reset" includePageParams="false" propagation="end" 
+	  					action="#{fiscalYearRptList.resetFiscalYearRpt()}" rendered="#{not empty fiscalYearRptList.fiscalYearList}"/>
+	 	 <br />
+	 <a:outputPanel id="reporttab" rendered="#{not empty fiscalYearRptList.resultList}">
+	  <div style="text-align:right;padding-right:50px;">
+	  <!-- <h:commandButton id="excelId" type="submit"
+				action="#{org.jboss.seam.excel.exporter.excelExporter.export('fiscalYrptForm:fiscalYrRptTable')}"
+				image="/img/filetype_excel.png"
+				style="width:30px;"
+				title="Export as Excel"
+				onclick="alert('Change file name accordingly while saving')"
+				/> -->
+				
+				  <h:commandButton id="excelId" type="submit"
+				action="#{fiscalYearRptList.generateRpt()}" 
+				image="/img/filetype_excel.png"
+				style="width:30px;"
+				title="Export as Excel"
+				/>
+	  </div>
+	  
+	  <h:outputText  value="No Records Found" rendered="#{empty fiscalYearRptList.resultList}"></h:outputText>
+	  
+	  <rich:panel header="Fiscal Year Report For #{fiscalYearRptList.selectedFiscalYear} (#{fiscalYearRptList.resultList.size()} records)" rendered="#{not empty fiscalYearRptList.resultList}">
+	   
+	    	<rich:dataTable id="fiscalYrRptTable" var="rpt" value="#{fiscalYearRptList.resultList}" rows="25">
+	    		<rich:column >
+	    		   <f:facet name="header">
+	    		   <h:outputText value="Division"/>
+	    		   </f:facet>
+	    		   <h:outputText value="#{rpt.department}"/>
+	    		</rich:column>
+	    		<rich:column id="sortCol"> 
+	    		   <f:facet name="header"><h:outputText value="Index Generated"/></f:facet>
+	    		   <h:outputText value="#{rpt.indexGenerated}" rendered="#{rpt.indexGenerated !='zz'}"/>
+	    		   <h:outputText value="#{rpt.indexGenerated}" style="visibility: hidden;" rendered="#{rpt.indexGenerated =='zz'}"/>
+	    		</rich:column>
+	    		<rich:column>
+	    		   <f:facet name="header"><h:outputText value="Fund Generated"/></f:facet>
+	    		   <h:outputText value="#{rpt.fundGenerated}" />
+	    		</rich:column>
+	    		<rich:column > 
+	    		   <f:facet name="header"><h:outputText value="Index Deposited"/></f:facet>
+	    		   <h:outputText value="#{rpt.indexDeposited}"> 
+	    		   </h:outputText>
+	    		</rich:column>
+	    		<rich:column > 
+	    		   <f:facet name="header"><h:outputText value="Fund Deposited"/></f:facet>
+	    		   			<h:outputText value="#{rpt.fundDeposited}"/>
+	    		</rich:column>
+	    		<rich:column  > 
+	    		   <f:facet name="header"><h:outputText value="Q1"/></f:facet>
+	    		   <div style="text-align:right;">
+	    		   <h:outputText value="#{rpt.q1total}">
+	    		   		<f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2"/>
+	    		   </h:outputText>
+	    		   </div>
+	    		 <!--  <f:facet name="footer">
+					<h:outputText value="#{fiscalYearRptList.q1AllIndxTotal}" style="font-weight:bold;text-align:right;">
+							<f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2"/>
+						</h:outputText>
+				  </f:facet> -->
+	    		</rich:column>
+	    		<rich:column  > 
+	    		   <f:facet name="header"><h:outputText value="Q2"/></f:facet>
+	    		   <div style="text-align:right;">
+	    		   <h:outputText value="#{rpt.q2total}" >
+	    		   		<f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2"/>
+	    		   </h:outputText>
+	    		   </div>
+	    		 <!--  <f:facet name="footer">
+						<h:outputText value="#{fiscalYearRptList.q2AllIndxTotal}" style="font-weight:bold;text-align:right;">
+							<f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2"/>
+						</h:outputText>
+					</f:facet> -->
+	    		</rich:column>
+	    		<rich:column  > 
+	    		   <f:facet name="header"><h:outputText value="Q3"/></f:facet>
+	    		   <div style="text-align:right;">
+	    		   <h:outputText value="#{rpt.q3total}" >
+	    		   		<f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2"/>
+	    		   </h:outputText>
+	    		   </div>
+	    		  <!--  <f:facet name="footer">
+						<h:outputText value="#{fiscalYearRptList.q3AllIndxTotal}" style="font-weight:bold;text-align:right;">
+							<f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2"/>
+						</h:outputText>
+					 </f:facet> -->
+	    		</rich:column>
+	    		<rich:column  > 
+	    		   <f:facet name="header"><h:outputText value="Q4"/></f:facet>
+	    		   <div style="text-align:right;">
+	    		   <h:outputText value="#{rpt.q4total}" >
+	    		   		<f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2"/>
+	    		   </h:outputText>
+	    		   </div>
+	    		  <!--  <f:facet name="footer">
+						<h:outputText value="#{fiscalYearRptList.q4AllIndxTotal}" style="font-weight:bold;text-align:right;">
+							<f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2"/>
+						</h:outputText>
+					 </f:facet> -->
+	    		</rich:column>
+	    		<rich:column style="font-weight:bold;"> 
+	    		   <f:facet name="header"><h:outputText value="Total"/></f:facet>
+	    		   <div style="text-align:right;">
+	    		   <h:outputText value="#{rpt.totalFiscalStip}" >
+	    		   		<f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2"/>
+	    		   </h:outputText>
+	    		   </div>
+					<!-- <f:facet name="footer">
+						<h:outputText value="#{fiscalYearRptList.allIndxTotalsTotal}" style="font-weight:bold;text-align:right;">
+							<f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2"/>
+						</h:outputText>
+					 </f:facet> -->
+	    		</rich:column>
+	    		<f:facet name="footer">
+	    		<rich:datascroller id="scroller1"  for="fiscalYrRptTable" renderIfSinglePage="false"/>
+	    		</f:facet>
+	    	</rich:dataTable>
+	     </rich:panel>
+	   </a:outputPanel>
+	  
+	</h:form>
+	  <a:status id="ajaxStatusId"
+   			onstart="#{rich:component('ajaxLoadingModalBox')}.show()"
+   			onstop="#{rich:component('ajaxLoadingModalBox')}.hide()" />
+
+      
+       <rich:modalPanel id="ajaxLoadingModalBox" minHeight="85" minWidth="95"
+ 			height="35" width="100" zindex="2000" style="background-color: #ffffff; width: 100%; border-width: 0px; border-color: #ffffff; 
+ 			border-style: solid; text-align: center;">
+			<h:panelGrid columns="1" style="border-width: 0px; text-align: center;">
+		 		<h:outputText value="please wait..." style="font-weight: bold;"/>
+		 		 <h:graphicImage value="/img/progress.gif" alt="please wait..." style="background-color: #ffffff;"/>
+	 		</h:panelGrid>
+	  </rich:modalPanel>
+ </ui:define>
+</ui:composition>

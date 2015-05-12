@@ -1,0 +1,209 @@
+<!-- 
+    ~ author : Sharath A.
+ -->
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+     <ui:define name="head">
+      <a:loadScript src="/resources/js/waitDialog.js" />
+      <ui:include src="/admin/sections/editRolePopUp.html" />
+   </ui:define>
+<ui:define name="body">
+    <h:form id="userAcct" styleClass="edit">
+        <rich:panel>
+            <f:facet name="header">Edit user account</f:facet>
+            <s:decorate id="ucsdIdField" template="/layout/display.xhtml">
+                <ui:define name="label">UCSD Id</ui:define>
+                <h:outputText id="ucsdId"
+                           size="20"
+                      maxlength="10"
+                          value="#{userAcctHome.instance.ucsdId}"
+                          >
+                    <a:support event="onblur" reRender="ucsdIdField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:outputText>
+            </s:decorate>
+            <s:decorate id="nameField" template="/layout/display.xhtml">
+                <ui:define name="label">Name</ui:define>
+                <h:outputText id="name"
+                           	  size="45"
+                      		  maxlength="45"
+                              value="#{userAcctHome.instance.name}">
+                    <a:support event="onblur" reRender="nameField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:outputText>
+            </s:decorate>
+
+            <s:decorate id="firstNameField" template="/layout/display.xhtml">
+                <ui:define name="label">First Name</ui:define>
+                <h:outputText id="firstName"
+                           size="50"
+                      maxlength="50"
+                          value="#{userAcctHome.instance.firstName}">
+                    <a:support event="onblur" reRender="firstNameField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:outputText>
+            </s:decorate>
+
+
+            <s:decorate id="middleNameField" template="/layout/display.xhtml">
+                <ui:define name="label">Middle Name</ui:define>
+                <h:outputText id="middleName"
+                           size="50"
+                      maxlength="50"
+                          value="#{userAcctHome.instance.middleName}">
+                    <a:support event="onblur" reRender="middleNameField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:outputText>
+            </s:decorate>
+            <s:decorate id="lastNameField" template="/layout/display.xhtml">
+                <ui:define name="label">Last Name</ui:define>
+                <h:outputText id="lastName"
+                           size="75"
+                      maxlength="75"
+                          value="#{userAcctHome.instance.lastName}">
+                    <a:support event="onblur" reRender="lastNameField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:outputText>
+            </s:decorate>
+
+
+            <s:decorate id="emailField" template="/layout/display.xhtml">
+                <ui:define name="label">Email</ui:define>
+                <h:outputText id="email"
+                           size="100"
+                      maxlength="100"
+                          value="#{userAcctHome.instance.email}">
+                    <a:support event="onblur" reRender="emailField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:outputText>
+            </s:decorate>
+
+
+            <s:decorate id="funcAreaField" template="/layout/display.xhtml">
+                <ui:define name="label">Functional Area</ui:define>
+                <h:outputText id="funcArea"
+                          value="#{userAcctHome.instance.funcArea}">
+                    <a:support event="onblur" reRender="funcAreaField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:outputText>
+            </s:decorate>
+
+
+            <s:decorate id="employeeIdField" template="/layout/display.xhtml">
+                <ui:define name="label">Employee id</ui:define>
+                <h:outputText id="employeeId"
+                          value="#{userAcctHome.instance.employeeId}">
+                    <a:support event="onblur" reRender="employeeIdField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:outputText>
+            </s:decorate>
+
+
+            <div style="clear:both">
+            </div>
+
+        </rich:panel>
+
+        <div class="actionButtons">
+
+            <s:button id="cancelEdit"
+                   	  value="Cancel"
+             		  propagation="end"
+             		  includePageParams="flase"
+                      view="/admin/views/UserList.xhtml"/>
+        </div>
+    </h:form>
+ <a:outputPanel id="userEditPanel" ajaxRendered="true" >
+ <rich:tabPanel switchType="ajax" activeTabClass="activeTab" inactiveTabClass="inactiveTab">
+ 
+    <rich:tab label=" user roles">
+        <h:form styleClass="association" id="userAcctRolesChildren">
+
+            <h:outputText value="There are no roles associated with this user."
+                       rendered="#{empty userAcctHome.userAcctRoles}"/>
+
+            <rich:dataTable value="#{userAcctHome.getUserAcctRols()}"
+                           var="_userAcctRole"
+                      rendered="#{not empty userAcctHome.userAcctRoles}"
+                    rowClasses="rvgRowOne,rvgRowTwo"
+                            id="userAcctRolesTable" >
+                <rich:column sortBy="#{_userAcctRole.userRole.role}">
+                    <f:facet name="header">Role</f:facet>
+                    <h:outputText value="#{_userAcctRole.userRole.role}"/>
+                </rich:column>
+                 <rich:column width="80">
+             		<f:facet name="header">Action</f:facet>
+               		<a:outputPanel ajaxRendered="true">
+	                  <a:commandLink
+	                  		value="Update Role"  
+	                  		oncomplete="Richfaces.showModalPanel('editRolePopUp')"
+	                  		reRender="editPopUppanel"
+	                        >
+	                   </a:commandLink>
+               		</a:outputPanel>
+            	 </rich:column>
+            </rich:dataTable>
+        </h:form>
+    </rich:tab>
+
+    <rich:tab label=" user departments">
+        <h:form styleClass="association" id="userAcctDeptsChildren">
+            <h:outputText value="There are no departments associated with this user."
+                       rendered="#{empty userAcctHome.userAcctDepts}"/>
+            <rich:dataTable value="#{userAcctHome.getUserAcctDepartments()}"
+                           var="_userAcctDept"
+                      rendered="#{not empty userAcctHome.userAcctDepts}"
+                    rowClasses="rvgRowOne,rvgRowTwo"
+                            id="userAcctDeptsTable">
+                <rich:column sortBy="#{_userAcctDept.department.deptLongName}">
+                    <f:facet name="header">Department name</f:facet>
+                    <h:outputText value="#{_userAcctDept.department.deptLongName}"/>
+                </rich:column>
+                
+                 <rich:column width="80">
+             		<f:facet name="header">Action</f:facet>
+               		<a:outputPanel ajaxRendered="true">
+	                  <a:commandLink
+	                  		value="Delete"
+	                        action="#{userAcctDeptHome.removeDept(_userAcctDept)}"
+	                        reRender="userAcctDeptsChildren" 
+	                        oncomplete="resetSelection();" 
+	                        status="spAjaxStatus">
+	                   </a:commandLink>
+               		</a:outputPanel>
+            	 </rich:column>
+                
+            </rich:dataTable>
+        </h:form>
+        <f:subview rendered="#{userAcctHome.managed}" id="userAcctDepts">
+         <div class="actionButtons">
+            <s:button 	id="adduserAcctDept"
+                   		value="Assign Dept"
+                    	view="/admin/views/UserAcctDeptEdit.xhtml"
+             			rendered="#{userAcctHome.dboRole}">
+                 <f:param name="userAcctAccountId"
+                         value="#{userAcctHome.instance.accountId}"/>
+                 <f:param name="userAcctDeptFrom" value="UserAcct"/>
+            </s:button>
+        </div>
+        </f:subview>
+    </rich:tab>
+</rich:tabPanel>
+</a:outputPanel>
+ <a:status
+            id="spAjaxStatus"
+            forceId="true"
+            onstart="onRequestStart();"
+            onstop="onRequestEnd();" />
+      
+      <rich:modalPanel
+            id = "waitDialog"
+            resizeable="false"
+            autosized="false"
+            moveable="false"
+            width="10" height="10"
+            left="-100" top="-100"
+            shadowOpacity="0" />
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,93 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:s="http://jboss.com/products/seam/taglib">
+
+	<ul class="topNav">
+		<!-- show only home page if the User does not have access to the application with a relevant message -->
+			<s:div rendered="#{not identity.isLoggedIn()}">
+				<li><s:link id="homeLinkNotLoggedIn"
+					view="/home.xhtml"
+					propagation="none" includePageParams="false" value="Home" /></li>	
+					
+				<li style="float: right;"><a href="#">Help</a>
+					<ul>						
+						<li><a target="_blank"
+							href="http://som-qa2.ucsd.edu/mwiki/BADG:Applications/AppStip">
+							User Instructions</a></li>
+					</ul>
+				</li>										
+			</s:div>		
+		
+		<!--  show these links logged in to Users of the Application ( Only Employees of UCSD ), DBO's -->
+			<s:div rendered="#{s:hasRole('dbo') or s:hasRole('stip_user') or s:hasRole('stip_admin')}">
+				<li><s:link id="homeLinkloggedinId"
+					view="/home.xhtml"
+					propagation="none" includePageParams="false" value="Home" /></li>											
+						
+				<li><s:link id ="myAccountId"			
+					value="Reports"  rendered="#{s:hasRole('stip_admin') or s:hasRole('dbo')}"/>
+					<ul>
+						<li><s:link id="summaryReportId"
+								view="/reports/summaryReport.xhtml" 
+								value="Quarterly Detail" 
+								propagation="end" 
+								includePageParams="false"
+								rendered="#{s:hasRole('stip_admin')}"/> 
+						</li>
+						<li><s:link id="DeptReportId"
+								view="/reports/summaryReport.xhtml" 
+								value="Quarterly Detail" 
+								propagation="end" 
+								includePageParams="false"
+								rendered="#{s:hasRole('dbo')}"/> 
+						</li>
+						<li><s:link id="fiscalReportId"
+								view="/reports/fiscalYearReport.xhtml" 
+								value="Fiscal Year Report" 
+								propagation="end" 
+								includePageParams="false"
+								rendered="#{s:hasRole('stip_admin') or s:hasRole('dbo')}"/>
+						</li>
+					</ul>
+				</li>
+				 	
+			    <li style="float: right;"><a href="#">Help</a>
+				<ul>
+					<s:div
+						rendered="#{s:hasRole('stip_admin')}">
+						<li><a target="_blank"
+							href="http://som-qa2.ucsd.edu/mwiki/BADG_Private:ApplicationDocumentation/EnterpriseApplications/STIP">
+								Developer Documentation</a></li>
+					</s:div>
+	
+					<li><a target="_blank"
+						href="http://som-qa2.ucsd.edu/mwiki/BADG:Applications/AppStip#STIP_Admin_User.E2.80.99s_Guide">
+							User Instructions</a></li>
+				</ul>				 
+				</li> 	
+			</s:div>
+				
+			<s:div rendered="#{s:hasRole('stip_admin')}">
+				<li><a href="#">Administration</a>				
+					<ul>						
+					<li><s:link id="upload" 							
+							view="/admin/views/uploadExcel.xhtml" value="Upload GA Excel Workbook"
+							 propagation="begin" /></li>
+						<li><s:link id="manageStipDeptId" 							
+							view="/admin/views/StipDeptList.xhtml" value="Manage Stip Depts/Indexes" /></li>
+						<li><s:link id="DocId" 							
+							view="/admin/views/manageDocNumber.xhtml" value="Update Document Number/Reverse Journals" propagation="end"/></li>
+						<li><s:link id="viewJournalId" 							
+							view="/reports/journalSummary.xhtml" value="View Journals" propagation="end"/></li>	
+						<li><s:link  							
+							view="/admin/views/UserList.xhtml" value="Manage Stip Users" /></li>	
+																																																				
+					</ul>					 
+				</li>
+			</s:div>								
+				
+	</ul>
+</ui:composition>
+

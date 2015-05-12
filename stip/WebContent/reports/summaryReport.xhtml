@@ -1,0 +1,222 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:c="http://java.sun.com/jstl/core"
+    template="/layout/template.xhtml">
+    
+    <a:keepAlive beanName="dataScrollerSummary" ajaxOnly="true"/>
+ <ui:define name="head">
+    <style type="text/css">
+        .rich-messages-marker img {padding-right:7px;}
+        .rich-message-label {color:red;}
+        .top {vertical-align:top;}
+        .warnClass {display: none;}
+        .infoClass {display: none;}
+        .errorClass {color: red;}
+    </style>
+ 
+ </ui:define>
+ <ui:define name="body">    	 
+    <h:form id="summaryReportForm"> 
+    
+    <rich:messages layout="list" infoClass="infoClass" warnClass="warnClass" errorClass="errorClass">
+          <f:facet name="header">
+              <h:outputText value="Entered Data Status:"></h:outputText>
+          </f:facet>
+          <f:facet name="errorMarker">
+              <h:graphicImage value="/img/error.gif" />   
+          </f:facet>
+	  </rich:messages>
+	     
+	     <h:outputText value="No Quarters found to generate Quarterly Detail report" style="color:green;font-weight:bold;font-size:20px;" rendered="#{empty summaryReport.qrtList}"/>
+	  
+	   <s:decorate id="SelectQrtId" template="/layout/edit.xhtml">
+		 <ui:define name="label">
+		   <h:outputText value="Select Quarter Year" rendered="#{not empty summaryReport.qrtList}"/>
+		 </ui:define>
+           <h:selectManyListbox id="SelectQuarter" value="#{summaryReport.quarterYears}" 
+           						rendered="#{not empty summaryReport.qrtList}"
+           						size="5">
+       		<s:selectItems value="#{summaryReport.qrtList}" 
+       					   var="qrt" label="#{qrt}" itemValue="#{qrt}" />
+            </h:selectManyListbox>
+       </s:decorate>
+       
+        <s:decorate id="SelectDeptId" template="/layout/edit.xhtml" 
+        			rendered="#{not empty summaryReport.quarterYears and not empty summaryReport.deptList}">
+		 <ui:define name="label">
+		   <h:outputText id="deptDispId"  value="Select Department"/>
+		 </ui:define>
+           <h:selectOneMenu id="SelectDept"  value="#{summaryReport.dept}" >
+       		<s:selectItems value="#{summaryReport.deptList}" var="dept" label="#{dept}" itemValue="#{dept}"
+       							 noSelectionLabel="All Depts"  />
+            </h:selectOneMenu>
+       </s:decorate>
+	  <br /> <br /> <br /> <br /> <br /> <br /><br /><br /><br />
+	  <a:commandButton value="Search" reRender="summaryReportForm" rendered="#{not empty summaryReport.qrtList}"/>
+	  <s:button value="Reset" includePageParams="false" propagation="end" action="#{summaryReport.reset()}" rendered="#{not empty summaryReport.qrtList}"/>
+	 	 <br />
+	 <a:outputPanel id="summarytab" rendered="#{not empty summaryReport.summaryReport or not empty summaryReport.summaryReportSingle}">
+	  <div style="text-align:right;padding-right:50px;">
+	  <s:link view="/reports/summary_rpt_excel.xhtml"
+									id="nonSingleEcelId"
+									style="width:40px;"
+									title="Export as Excel"
+									onclick="alert('Change the Workbook/sheet names as preferred after saving the report')">
+				 <h:graphicImage value="/img/filetype_excel.png" width="40px;"/>
+		</s:link>	
+	  </div>
+	  
+	  <rich:tabPanel switchType="ajax"
+	  				  activeTabClass="activeTab" 
+	  				 inactiveTabClass="inactiveTab"
+	                 headerClass="tabHeader">
+	   	<rich:tab  switchType="ajax" label="Non Single Summary Report for #{summaryReport.quarterYears}(#{summaryReport.summaryReport.size()} records)" >
+	   <h:outputText  value="No Records Found" rendered="#{empty summaryReport.summaryReport}"></h:outputText>
+	   <br />
+		 <!--  <div style="text-align:right;padding-right:30px;">
+		    	
+				<h:commandButton id="textId" type="submit"
+					action="#{summaryReport.textNonSingleReport()}"
+					image="/img/textexprt.png"
+					style="width:40px;"
+					title="Export Non Single journal as text"
+					rendered="#{not empty summaryReport.summaryReport}"
+					>
+				</h:commandButton>
+				
+		</div> -->
+	  <h:outputText  value="Summary Report Non Single For #{summaryReport.quarterYears}" style="color:green;font-weight:bold;font-size:20px;" rendered="#{not empty summaryReport.quarterYears}"/>
+	  <h:outputText  value="    #{summaryReport.dept} " style="color:green;font-weight:bold;font-size:20px;" rendered="#{summaryReport.dept !='%'}"/>
+	  
+	    	<rich:dataTable id="Summarytable" var="rpt" value="#{summaryReport.summaryReport}" rows="25" rendered="#{not empty summaryReport.summaryReport}">
+	    		<rich:column >
+	    		  
+	    		   <f:facet name="header">
+	    		   <h:outputText value="Department"/>
+	    		   </f:facet>
+	    		   <h:outputText value="#{rpt.dept}"/>
+	    		</rich:column>
+	    		<rich:column  > 
+	    		   <f:facet name="header"><h:outputText value="Division"/></f:facet>
+	    		   <h:outputText value="#{rpt.division}" rendered="#{not empty rpt.indx}"/>
+	    		</rich:column>
+	    		<rich:column>
+	    		   <f:facet name="header"><h:outputText value="FY_QRT"/></f:facet>
+	    		   <h:outputText value="#{rpt.fyQrt}" rendered="#{not empty rpt.indx}"/>
+	    		</rich:column>
+	    		<rich:column > 
+	    		   <f:facet name="header"><h:outputText value="Index generated"/></f:facet>
+	    		   <h:outputText value="#{rpt.indx}" rendered="#{not empty rpt.indx}"> 
+	    		   </h:outputText>
+	    		</rich:column>
+	    		<rich:column > 
+	    		   <f:facet name="header"><h:outputText value="Fund generated"/></f:facet>
+	    		   <div style="text-align:center;">
+	    		   			<h:outputText value="#{rpt.fund}" rendered="#{not empty rpt.indx}"/>
+	    		   </div>
+	    		</rich:column>
+	    		<rich:column  > 
+	    		   <f:facet name="header"><h:outputText value="Index deposited"/></f:facet>
+	    		   <h:outputText value="#{rpt.depToIndex}" rendered="#{not empty rpt.indx}"/>
+	    		</rich:column>
+	    		<rich:column  > 
+	    		   <f:facet name="header"><h:outputText value="Fund deposited"/></f:facet>
+	    		   <h:outputText value="#{rpt.depToFund}" rendered="#{not empty rpt.indx}"/>
+	    		</rich:column>
+	    		<rich:column > 
+	    		   <f:facet name="header"><h:outputText value="Amount"/></f:facet>
+	    		   <h:outputText value="#{rpt.amount}" >
+	    		   		<f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2"/>
+	    		   </h:outputText>
+	    		</rich:column>
+	    		<f:facet name="footer">
+	    		<rich:datascroller id="scroller1"  for="Summarytable" renderIfSinglePage="false"/>
+	    		</f:facet>
+	    	</rich:dataTable>
+	    	</rich:tab>
+	    	
+	    	<rich:tab switchType="ajax" label="Single Summary Report for #{summaryReport.quarterYears}(#{summaryReport.summaryReportSingle.size()} records)" >
+	   <h:outputText  value="No Records Found" rendered="#{empty summaryReport.summaryReportSingle}"></h:outputText>
+	   <br />
+		 <!--  <div style="text-align:right;padding-right:30px;">
+
+				<h:commandButton id="textIdsingle" type="submit"
+					action="#{summaryReport.textSingleReport()}"
+					image="/img/textexprt.png"
+					style="width:40px;"
+					title="Export Single journal as text"
+					rendered="#{not empty summaryReport.summaryReportSingle}"
+					>
+				</h:commandButton>
+		</div> -->
+	  <h:outputText  value="Summary Report Single For #{summaryReport.quarterYears} " style="color:green;font-weight:bold;font-size:20px;" rendered="#{not empty summaryReport.quarterYears}"/>
+	  <h:outputText  value="    #{summaryReport.dept} " style="color:green;font-weight:bold;font-size:20px;" rendered="#{summaryReport.dept !='%'}"/>
+	    	<rich:dataTable id="Summarytablesingle" var="rpt" value="#{summaryReport.summaryReportSingle}" rows="25" rendered="#{not empty summaryReport.summaryReportSingle}">
+	    		<rich:column  >
+	    		  
+	    		   <f:facet name="header">
+	    		   <h:outputText value="Department"/>
+	    		   </f:facet>
+	    		   <h:outputText value="#{rpt.dept}"/>
+	    		</rich:column>
+	    		<rich:column  > 
+	    		   <f:facet name="header"><h:outputText value="Division"/></f:facet>
+	    		   <h:outputText value="#{rpt.division}" rendered="#{not empty rpt.depToIndex}"/>
+	    		</rich:column>
+	    		<rich:column>
+	    		   <f:facet name="header"><h:outputText value="FY_QRT"/></f:facet>
+	    		   <h:outputText value="#{rpt.fyQrt}" rendered="#{not empty rpt.depToIndex}"/>
+	    		</rich:column>
+	    		<rich:column  > 
+	    		   <f:facet name="header"><h:outputText value="Fund generated"/></f:facet>
+	    		   <div style="text-align:center;">
+	    		   			<h:outputText value="#{rpt.fund}" rendered="#{not empty rpt.depToIndex}"/>
+	    		   </div>
+	    		</rich:column>
+	    		<rich:column  > 
+	    		   <f:facet name="header"><h:outputText value="Index deposited"/></f:facet>
+	    		   <h:outputText value="#{rpt.depToIndex}" rendered="#{not empty rpt.depToIndex}"/>
+	    		</rich:column>
+	    		<rich:column  > 
+	    		   <f:facet name="header"><h:outputText value="Fund deposited"/></f:facet>
+	    		   <h:outputText value="#{rpt.depToFund}" rendered="#{not empty rpt.depToIndex}"/>
+	    		</rich:column>
+	    		<rich:column > 
+	    		   <f:facet name="header"><h:outputText value="Amount"/></f:facet>
+	    		   <h:outputText value="#{rpt.amount}" >
+	    		   		<f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2"/>
+	    		   </h:outputText>
+	    		</rich:column>
+	    		<f:facet name="footer">
+	    		<rich:datascroller id="scroller1"  for="Summarytablesingle" renderIfSinglePage="false" />
+	    		</f:facet>
+	    	</rich:dataTable>
+	    	</rich:tab>
+	    	
+	    	
+	     </rich:tabPanel>
+	   </a:outputPanel>
+	  
+	</h:form>
+	  <a:status id="ajaxStatusId"
+   			onstart="#{rich:component('ajaxLoadingModalBox')}.show()"
+   			onstop="#{rich:component('ajaxLoadingModalBox')}.hide()" />
+
+      
+       <rich:modalPanel id="ajaxLoadingModalBox" minHeight="85" minWidth="95"
+ 			height="35" width="100" zindex="2000" style="background-color: #ffffff; width: 100%; border-width: 0px; border-color: #ffffff; 
+ 			border-style: solid; text-align: center;">
+			<h:panelGrid columns="1" style="border-width: 0px; text-align: center;">
+		 		<h:outputText value="please wait..." style="font-weight: bold;"/>
+		 		 <h:graphicImage value="/img/progress.gif" alt="please wait..." style="background-color: #ffffff;"/>
+	 		</h:panelGrid>
+	  </rich:modalPanel>
+ </ui:define>
+</ui:composition>

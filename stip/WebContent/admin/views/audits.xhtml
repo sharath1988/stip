@@ -1,0 +1,157 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:c="http://java.sun.com/jstl/core"
+    template="/layout/template.xhtml">
+	<ui:define name="head">
+	<a:loadScript src="/resources/waitDialog.js" />
+	 <style type="text/css">
+        .rich-messages-marker img {padding-right:7px;}
+        .rich-message-label {color:red;}
+        .top {vertical-align:top;}
+        .warnClass {display: none;}
+        .infoClass {display: none;}
+        .errorClass {color: red;}
+       </style>
+ </ui:define>
+  <ui:define name="body">    	 
+   <h:form id="uploadExcelForm">    	 
+            <rich:messages layout="list" infoClass="infoClass" warnClass="warnClass" errorClass="errorClass">
+		          <f:facet name="header">
+		              <h:outputText value="Entered Data Status:"></h:outputText>
+		          </f:facet>
+		          <f:facet name="errorMarker">
+		              <h:graphicImage value="/img/error.gif" />   
+		          </f:facet>
+	  		</rich:messages>
+
+		<h:outputText value="Audits For #{audit.quarterYear}" style="color:green;font-weight:bold;font-size:20px;"/>
+		<br /><br />
+		<h:panelGrid columns="2" style="border:none;" columnClasses="colclass1,colclass2">
+		      
+		      <rich:panel  header="Differences in Stip Posted in IFIS vs GA Excel sheet uploaded" rendered="#{empty audit.ifisGAMismatchesPanel.stipDiffIFISGAs}" bodyClass="blankstyle"/>
+		      
+		      <rich:simpleTogglePanel switchType="ajax" label="Differences in Stip Posted in IFIS vs GA Excel sheet uploaded" rendered="#{not empty audit.ifisGAMismatchesPanel.stipDiffIFISGAs}" opened="false">
+			    <rich:dataTable var="ifisGaDiff" value="#{audit.ifisGAMismatchesPanel.stipDiffIFISGAs}">
+			    		<rich:column label="Fund" sortable="true" sortBy="#{ifisGaDiff.fund}">  
+			    		   <f:facet name="header">Fund</f:facet>
+			    			<h:outputText value="#{ifisGaDiff.fund}" />
+			    		</rich:column>		
+			    		<rich:column label="GA Total" sortable="true" sortBy="#{ifisGaDiff.gaTotal}">  
+			    		 <f:facet name="header">GA Total</f:facet>
+			    		<h:outputText value="#{ifisGaDiff.gaTotal}" />
+			    		</rich:column>
+			    		<rich:column label="IFIS Total" sortable="true" sortBy="#{ifisGaDiff.ifisTotal}">  
+			    		<f:facet name="header">IFIS Total</f:facet>
+			    		<h:outputText value="#{ifisGaDiff.ifisTotal}" />
+			    		</rich:column>
+			    		<rich:column label="Difference" sortable="true" sortBy="#{ifisGaDiff.difference}">  
+			    		<f:facet name="header">Difference</f:facet>
+			    		<h:outputText value="#{ifisGaDiff.difference}" />
+			    		</rich:column>
+			    </rich:dataTable>
+		    </rich:simpleTogglePanel>
+		    <h:panelGroup layout="block">
+		       <h:graphicImage value="/img/wrong.png" width="25%;" rendered="#{not empty audit.ifisGAMismatchesPanel.stipDiffIFISGAs}"/>
+		       <h:graphicImage value="/img/right.png" width="25%;" rendered="#{empty audit.ifisGAMismatchesPanel.stipDiffIFISGAs}"/>
+		     </h:panelGroup>
+		     
+		    
+		     <rich:panel  header="Missing indices while creating journals" bodyClass="blankstyle"/>
+		     <h:panelGroup layout="block">
+		       <h:graphicImage value="/img/wrong.png" width="25%;" rendered="#{not empty audit.missingIndicesPanel.missIndices}"/>
+		       <h:graphicImage value="/img/right.png" width="25%;" rendered="#{empty audit.missingIndicesPanel.missIndices}"/>
+		    </h:panelGroup>
+		    
+		    <rich:panel  header="Inactive indices while creating journals" bodyClass="blankstyle"/>
+		     <h:panelGroup layout="block">
+		       <h:graphicImage value="/img/wrong.png" width="25%;"  rendered="#{not empty audit.inactiveIndicesPanel.inactiveIndices}"/>
+		       <h:graphicImage value="/img/right.png" width="25%;"  rendered="#{empty audit.inactiveIndicesPanel.inactiveIndices}"/>
+		    </h:panelGroup>
+		    
+		    <rich:panel  header="Stip and Fund balance Sign Mismatches" rendered="#{empty audit.misMatchsignPanel.signMismatches}" bodyClass="blankstyle"/>
+		    <rich:simpleTogglePanel switchType="ajax" label="Stip and Fund balance Sign Mismatches" rendered="#{not empty audit.misMatchsignPanel.signMismatches}" opened="false">
+			    <rich:dataTable
+			    				var="signMismatch" value="#{audit.misMatchsignPanel.signMismatches}">
+			    		<rich:column label="Stip Amount" sortable="true" sortBy="#{signMismatch.stipAmt}">  
+			    		   <f:facet name="header">Stip Amount</f:facet>
+			    			<h:outputText value="#{signMismatch.stipAmt}" >
+			    			 <f:convertNumber maxFractionDigits="2"/>
+			    			</h:outputText>
+			    		</rich:column>		
+			    		<rich:column label="Final Stip Fund" sortable="true" sortBy="#{signMismatch.sumFinalStipFund}">  
+			    		 <f:facet name="header">Final Stip Fund</f:facet>
+			    		<h:outputText value="#{signMismatch.sumFinalStipFund}" >
+			    			 <f:convertNumber maxFractionDigits="2"/>
+			    			</h:outputText>
+			    		</rich:column>
+			    		<rich:column label="Average" sortable="true" sortBy="#{signMismatch.average}">  
+			    		<f:facet name="header">Average</f:facet>
+			    		<h:outputText value="#{signMismatch.average}" >
+			    			 <f:convertNumber maxFractionDigits="2"/>
+			    			</h:outputText>
+			    		</rich:column>
+			    		<rich:column label="Index" sortable="true" sortBy="#{signMismatch.indx}"> 
+			    		<f:facet name="header">Index</f:facet>
+			    		<h:outputText value="#{signMismatch.indx}" /> 
+			    		</rich:column>
+			    		<rich:column label="Fund" sortable="true" sortBy="#{signMismatch.pfFund}">
+			    		<f:facet name="header">Fund</f:facet>  
+			    		<h:outputText value="#{signMismatch.pfFund}" />
+			    		</rich:column>
+			    		<rich:column label="Fund Deposit" sortable="true" sortBy="#{signMismatch.funddeposit}">
+			    		<f:facet name="header">Fund Deposit</f:facet>  
+			    		<h:outputText value="#{signMismatch.funddeposit}" />
+			    		</rich:column>
+			    		<rich:column label="Int Rate" sortable="true" sortBy="#{signMismatch.intRate}">
+			    		<f:facet name="header">Int Rate</f:facet>  
+			    		<h:outputText value="#{signMismatch.intRate}" />
+			    		</rich:column>
+			    		<rich:column label="MjrGrpId" sortable="true" sortBy="#{signMismatch.code}">  
+			    		<f:facet name="header">MjrGrpId</f:facet>
+			    		<h:outputText value="#{signMismatch.code}" />
+			    		</rich:column>
+			    		<rich:column label="Dept" sortable="true" sortBy="#{signMismatch.department}">  
+			    		<f:facet name="header">Dept</f:facet>
+			    		<h:outputText value="#{signMismatch.department}" />
+			    		</rich:column>
+			    		<rich:column label="Total Stip" sortable="true" sortBy="#{signMismatch.totalStip}">
+			    		<f:facet name="header">Total Stip</f:facet>  
+			    		<h:outputText value="#{signMismatch.totalStip}" >
+			    			 <f:convertNumber maxFractionDigits="2"/>
+			    			</h:outputText>
+			    		</rich:column>
+			    		<rich:column label="Tot Fnd Avg" sortable="true" sortBy="#{signMismatch.totFndAvg}">
+			    		<f:facet name="header">Tot Fnd Avg</f:facet>  
+			    		<h:outputText value="#{signMismatch.totFndAvg}" />
+			    		</rich:column>
+			    </rich:dataTable>
+		    </rich:simpleTogglePanel>
+		     <h:panelGroup layout="block">
+		       <h:graphicImage value="/img/wrong.png" width="25%;" rendered="#{not empty audit.misMatchsignPanel.signMismatches}"/>
+		       <h:graphicImage value="/img/right.png" width="25%;" rendered="#{empty audit.misMatchsignPanel.signMismatches}"/>
+		    </h:panelGroup>
+		    
+		   <s:button view="/admin/views/manageIndices.xhtml" propagation="join" value="View Missing/Invalid Indices" 
+		    		  rendered="#{(empty audit.ifisGAMismatchesPanel.stipDiffIFISGAs and empty audit.misMatchsignPanel.signMismatches) and 
+		    		  			(not empty audit.missingIndicesPanel.missIndices or not empty audit.inactiveIndicesPanel.inactiveIndices)}">
+		      <f:param name="qtrYr" value="#{audit.quarterYear}">
+		      </f:param>
+		    </s:button>
+		    
+		    <s:button view="/reports/journalSummary.xhtml" propagation="end" value="View Journals"
+		    		  rendered="#{(empty audit.ifisGAMismatchesPanel.stipDiffIFISGAs and empty audit.misMatchsignPanel.signMismatches) and 
+		    		  			(empty audit.missingIndicesPanel.missIndices and empty audit.inactiveIndicesPanel.inactiveIndices)}">
+		      <f:param name="qtrYr" value="#{audit.quarterYear}">
+		      </f:param>
+		    </s:button>
+		    </h:panelGrid>
+  </h:form>
+ </ui:define>
+</ui:composition>

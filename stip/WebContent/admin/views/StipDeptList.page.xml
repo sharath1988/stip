@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns="http://jboss.com/products/seam/pages"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.2.xsd">
+
+   <param name="firstResult" value="#{stipDeptList.firstResult}"/>
+   <param name="sort" value="#{stipDeptList.orderColumn}"/>
+   <param name="dir" value="#{stipDeptList.orderDirection}"/>
+   <param name="logic" value="#{stipDeptList.restrictionLogicOperator}"/>
+
+   <param name="from"/>
+    <param name="stipDeptId" value="#{stipDeptList.stipDept.stipdeptId}"/>
+   <param name="dept" value="#{stipDeptList.stipDept.dept}"/>
+   <param name="division" value="#{stipDeptList.stipDept.division}"/>
+   <param name="stipFund" value="#{stipDeptList.stipDept.stipFund}"/>
+   <param name="indx" value="#{stipDeptList.stipDept.indx}"/>
+   <param name="fund" value="#{stipDeptList.stipDept.fund}"/>
+   <param name="org" value="#{stipDeptList.stipDept.org}"/>
+   <param name="acct" value="#{stipDeptList.stipDept.acct}"/>
+   <param name="notes" value="#{stipDeptList.stipDept.notes}"/>
+   <param name="createdBy" value="#{stipDeptList.stipDept.createdBy}"/>
+
+</page>

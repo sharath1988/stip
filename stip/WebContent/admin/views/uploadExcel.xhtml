@@ -1,0 +1,177 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+ <ui:define name="head">
+	<a:loadScript src="/resources/waitDialog.js" />
+	 <style type="text/css">
+        .rich-messages-marker img {padding-right:7px;}
+        .rich-message-label {color:red;}
+        .top {vertical-align:top;}
+        .warnClass {display: none;}
+        .infoClass {display: none;}
+        .errorClass {color: red;}
+       </style>
+ </ui:define>
+ <ui:define name="body">    	 
+    <h:form id="uploadExcelForm">    	 
+    <a:queue id="queId" ignoreDupResponses="true" requestDelay="1000"/>	
+	  <rich:messages layout="list" infoClass="infoClass" warnClass="warnClass" errorClass="errorClass">
+          <f:facet name="header">
+              <h:outputText value="Entered Data Status:"></h:outputText>
+          </f:facet>
+          <f:facet name="errorMarker">
+              <h:graphicImage value="/img/error.gif" />   
+          </f:facet>
+	  </rich:messages>
+      <rich:panel style="height:500px;">
+		 <f:facet name="header">Upload GA Excel Excel Workbook</f:facet>    
+		 <h:panelGrid columns="1" style="border-stylr:none;border-width:0px;">
+		   <s:decorate template="/layout/display.xhtml">
+		     <ui:define name="label">Select Quarter</ui:define>
+		     <h:selectOneMenu value="#{uploadExcel.selectedQuarterYear}">
+		       <s:selectItems  value="#{uploadExcel.prevFourQuarters}" var="_quarter" noSelectionLabel="Select QtrYr..." label="#{_quarter}" itemValue="#{_quarter}"/>
+		      <a:support event="onchange" ajaxSingle="true" eventsQueue="queId" action="#{uploadExcel.checkJournalAlreayExist()}"
+				         reRender="ajaxUpload,auditId,stipRateId">
+	   		  </a:support> 
+		     </h:selectOneMenu>
+		   </s:decorate>
+		   
+		   <a:outputPanel id="stipRateId">
+		   <s:decorate id="stipRateDecId" template="/layout/edit.xhtml"  rendered="#{not empty uploadExcel.selectedQuarterYear 
+										 and not empty uploadExcel.prevFourQuarters}">
+			     <ui:define  name="label">Stip Rate %</ui:define>
+			     <h:inputText id="stipRate"  value="#{uploadExcel.intRate}" 
+			     			  required="true" requiredMessage="stip rate is required to process journals">
+			        <a:support event="onblur" reRender="stipRateDecId"/>
+			        <a:support event="onkeyup" reRender="ajaxUpload,stipRateDecId" eventsQueue="inQueId" requestDelay="2500"/>
+			     </h:inputText>
+			   </s:decorate>
+			</a:outputPanel>
+			   
+			<a:outputPanel id="ajaxUpload">
+			
+				<s:div styleClass="actionButtons" rendered="#{empty from}">
+				 
+				  <!--   <s:button id="summaryId" value="View Journals" propagation="end" 
+						  view="/reports/journalSummary.xhtml" rendered="#{not empty uploadExcel.selectedQuarterYear 
+									 			and not empty uploadExcel.prevFourQuarters 
+									 			and uploadExcel.journalExist}"
+						  style="width:125px; height:25px;">
+					  <f:param name="qtrYr" value="#{uploadExcel.selectedQuarterYear}" />
+				    </s:button> -->
+				
+					<a:commandButton ajaxSingle="true"  reRender="loadPanel" 
+									 style="width:125px; height:25px;" value="Upload Excel File" 
+									 oncomplete="#{rich:component('loadPanel')}.show()" 
+									 onclick="if (!confirm('Stip Rate % you entered is #{uploadExcel.intRate}. Do you want to continue ?')) return false"
+									 rendered="#{not empty uploadExcel.selectedQuarterYear 
+									 			and not empty uploadExcel.prevFourQuarters 
+									 			and not uploadExcel.audits
+									 			and not empty uploadExcel.intRate}" />
+									 			
+					<!-- <a:commandButton ajaxSingle="true" reRender="loadPanel" 
+									 style="width:125px; height:25px;" value="Upload Excel File" 
+									 onclick="if (!confirm('The Quarter you selected to process already have the stip_funds from GA excel sheet and journals.
+										 					 do you want to clear the old journals and the stip_funds and recreate?')) return false"
+									 oncomplete="#{rich:component('loadPanel')}.show()" 
+									 rendered="#{not empty uploadExcel.selectedQuarterYear 
+									 			and not empty uploadExcel.prevFourQuarters 
+									 			and uploadExcel.journalExist
+									 			and not uploadExcel.audits
+									 			and not empty uploadExcel.intRate}" /> -->
+									 			
+					 <s:button id="auditId" value="View Audits" propagation="end" 
+						  view="/admin/views/audits.xhtml" rendered="#{not empty uploadExcel.selectedQuarterYear 
+									 			and not empty uploadExcel.prevFourQuarters 
+									 			and uploadExcel.audits}"
+						  style="width:125px; height:25px;" onclick="#{rich:component('adbLoadingModalBoxAudit')}.show()">
+					  <f:param name="quarterYear" value="#{uploadExcel.selectedQuarterYear}" />
+					  <f:param name="intRate" value="#{uploadExcel.intRate}" />
+				    </s:button>
+				</s:div>
+			</a:outputPanel>
+			
+		  </h:panelGrid>
+	   </rich:panel>	
+    </h:form>
+    
+    <rich:modalPanel id="loadPanel" autosized="true" height="100">
+	  <f:facet name="header">
+		<h:outputText value="Upload GA Excel STIP Report to Reconcile" />
+	  </f:facet>
+	  <f:facet name="controls">
+	    <h:panelGroup>
+		  <h:graphicImage value="/img/delete.png" id="hl" />
+			<rich:componentControl for="loadPanel" attachTo="hl"
+			  	 operation="hide" event="onclick" />
+		</h:panelGroup>
+	  </f:facet>
+	  <h:form>
+			<rich:fileUpload 
+							 fileUploadListener="#{uploadExcel.parse}" 
+							 id="upload"  
+							 acceptedTypes="xlsx" 
+							 ontyperejected="alert('Only .xlsx files are accepted');" 
+							 status="adbStatusId"
+							 progressLabel="progress...."
+							 immediateUpload="true"
+							 >
+				<a:support event="onuploadcomplete" action="#{uploadExcel.loadInfoFileHook}" 
+						   reRender="loadPanel,uploadExcelForm" status="auditStatusId" />
+			</rich:fileUpload>
+	  </h:form>
+    </rich:modalPanel>
+    
+    <!-- generalized status popup -->
+    <a:status id="ajaxStatusId"
+   			onstart="#{rich:component('ajaxLoadingModalBox')}.show()"
+   			onstop="#{rich:component('ajaxLoadingModalBox')}.hide()" />
+
+      
+       <rich:modalPanel id="ajaxLoadingModalBox" minHeight="85" minWidth="95"
+ 			height="35" width="100" zindex="2000" style="background-color: #ffffff; width: 100%; border-width: 0px; border-color: #ffffff; 
+ 			border-style: solid; text-align: center;">
+			<h:panelGrid columns="1" style="border-width: 0px; text-align: center;">
+		 		<h:outputText value="please wait..." style="font-weight: bold;"/>
+		 		 <h:graphicImage value="/img/progress.gif" alt="please wait..." style="background-color: #ffffff;"/>
+	 		</h:panelGrid>
+	  </rich:modalPanel>
+	  
+	<!-- audit status popup -->
+    <a:status id="auditStatusId" forceId="true"
+   			onstart="#{rich:component('auditLoadingModalBoxAudit')}.show()"
+   			onstop="#{rich:component('auditLoadingModalBoxAudit')}.hide()" />
+	  <rich:modalPanel id="auditLoadingModalBoxAudit"
+ 			height="40" width="350" zindex="2000" style="background-color: #ffffff; width: 100%; border-width: 0px; border-color: #ffffff; 
+ 			border-style: solid; text-align: center;">
+			<h:panelGrid columns="1" style="border-width: 0px; text-align: center;">
+		 		<h:outputText value="Performing Audits please wait" style="font-weight: bold;"/>
+	 		</h:panelGrid>
+	  </rich:modalPanel>
+	  
+  <!-- popup for adbtables--> 
+	   <a:status id="adbStatusId" forceId="true"
+   			onstart="#{rich:component('adbLoadingModalBox')}.show()"
+   			onstop="#{rich:component('adbLoadingModalBox')}.hide()" />
+
+      
+       <rich:modalPanel id="adbLoadingModalBox" minHeight="85" minWidth="95"
+ 			height="35" width="500" zindex="2000" style="background-color: #ffffff; width: 100%; border-width: 0px; border-color: #ffffff; 
+ 			border-style: solid; text-align: center;">
+			<h:panelGrid columns="1" style="border-width: 0px; text-align: center;">
+		 		<h:outputText value="generating adb tables please wait for 2-3 minutes until the popup closes..." style="font-weight: bold;"/>
+		 		<div style="text-align:center;"> 
+		 		 <h:graphicImage value="/img/progress.gif" alt="please wait..." style="background-color: #ffffff;padding-left:200px;"/>
+		 		 </div>
+	 		</h:panelGrid>
+	  </rich:modalPanel>
+	  
+ </ui:define>
+</ui:composition>

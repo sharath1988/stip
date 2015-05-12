@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:ui="http://java.sun.com/jsf/facelets"
+   xmlns:f="http://java.sun.com/jsf/core"
+   xmlns:h="http://java.sun.com/jsf/html"
+   xmlns:a="http://richfaces.org/a4j"
+   xmlns:c="http://java.sun.com/jstl/core"
+   xmlns:s="http://jboss.com/products/seam/taglib"
+   contentType="text/html">
+   <html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<title>STIP Application</title>
+<link rel="shortcut icon" href="#{request.contextPath}/favicon.ico" />
+<a:loadStyle src="/stylesheet/theme.xcss" />
+<a:loadStyle src="/stylesheet/theme.css" />
+<a:loadStyle src="/stylesheet/som.css" />
+<a:loadStyle src="/stylesheet/useradmin.css"/>
+
+<ui:insert name="head" />
+
+<!-- wrap pane styling -->
+<style>
+label.error {
+	background:
+		url('http://dev.jquery.com/view/trunk/plugins/validate/demo/images/unchecked.gif')
+		no-repeat;
+	padding-left: 16px;
+	margin-left: .3em;
+	font-size: smaller;
+}
+
+label.valid {
+	background:
+		url('http://dev.jquery.com/view/trunk/plugins/validate/demo/images/checked.gif')
+		no-repeat;
+	display: block;
+	width: 16px;
+	height: 16px;
+}
+
+span.export {
+	padding: 0 4px 1px 20px;
+	font-size: x-small;
+	text-align: center;
+}
+
+span.excel {
+	background-image: url('/cuser/resources/pics/ico_file_excel.png');
+	background-repeat: no-repeat;
+	width: 16px;
+}
+
+div.wrap {
+	height: 650px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	overflow: auto;
+}
+
+table {
+	width: 100%;
+	border-left: 1px solid #BBB;
+	border-bottom: 1px solid #BBB;
+}
+
+th {
+	text-align: center;
+	font-size: 90%;
+}
+
+td {
+	vertical-align: top;
+	text-align: left;
+	color: black;
+}
+
+tr.even td {
+	padding: 1px 1px 1px 1px;
+}
+
+tr.odd td {
+	padding: 1px 1px 1px 1px;
+}
+
+.subtotal {
+	background-color: #1388CD;
+}
+
+.grandtotal-row {
+	background-color: #365E96;
+}
+
+.subtotal-label,.grandtotal-label {
+	color: #FFFFFF;
+	text-align: right;
+}
+
+.subtotal-sum,.grandtotal-sum,.group-1 {
+	color: #FFFFFF;
+	text-align: right;
+	font-size: smaller;
+	text-decoration: underline;
+}
+
+.subtotal-header {
+	color: #000000;
+	text-align: left;
+	font-size: smaller;
+	text-decoration: underline;
+}
+
+.money {
+	text-align: right;
+}
+
+.button {
+	border-left: 2px solid #2B5590;
+	border-bottom: 3px solid #2B5590;
+	border-right: 1px solid #2B5590;
+	border-top: 1px solid #2B5590;
+	background: #E1EAEF;
+	color: #000000;
+}
+
+.button:hover {
+	border-left: 2px solid #2B5590;
+	border-bottom: 3px solid #2B5590;
+	border-right: 1px solid #2B5590;
+	border-top: 1px solid #2B5590;
+	background: #CCCCCC;
+}
+
+.colorheader {
+	background-color: #CCCCCC;
+	padding: 0px 0px 1px 10px;
+	text-align: right;
+	font-size: smaller;
+	text-decoration: underline;
+}
+
+.blankstyle {
+	display: none;
+}
+</style>
+
+
+</head>
+<body id="body">
+
+
+   <!--  -->
+   <div class="wrapper">
+      <!--  this gets closed in the footer -->
+
+      <div class="clr"></div>
+      <div class="topHeader"></div>
+      <div class="wrapper2">
+         <table class="headerWrapper">
+            <tr>
+               <td><a href="/stip/" class="logo left"> <img
+                     src="http://som.ucsd.edu/images/logo.gif"
+                     alt="UC San Diego - Health Sciences" />
+               </a></td>
+                <td class="${appInfo.testServer?'testheader':'prodheader'}">
+                        <strong>STIP Application</strong>
+                        <h:outputText
+                              value=" - test environment"
+                              rendered="#{appInfo.testServer}" />
+                 </td>
+               <td class="userheader" style="width:25%;">Hello: #{identity.firstName}
+                
+                     <s:link id="linkLocalLogout" 
+                     	view="/logout.xhtml" 
+						value="Logout" 
+						style="text-decoration: underline; color: #FFFFFF;"
+						rendered="#{identity.loggedIn and stipLinkManager.isLocal}"
+						action="#{identity.logout}">
+						<s:conversationPropagation type="none"/>
+					</s:link>
+                     
+                     <s:link id="linkOnlineLogout" 
+                     	style="text-decoration: underline; color: #FFFFFF;"
+						view="/logout.xhtml"
+						value="Logout" 
+						rendered="#{identity.loggedIn and stipLinkManager.isDev 
+						or stipLinkManager.isQa 
+						or stipLinkManager.isProd}"> 
+						<s:conversationPropagation type="none"/>
+					</s:link>
+                     
+                     
+                     
+                     <br />
+                     <h:outputText  rendered="#{identity.loggedIn}"
+										value=" Role : #{identity.primaryRole}"
+										style="color: #FFFFFF;font-style:normal;
+										text-decoration: underline;font-weight:normal;"/>
+               </td>
+            </tr>
+         </table>
+		
+		 <ui:include src="/layout/menu.xhtml" />
+		         
+         <div class="pageContentFull">
+            <!-- to avoid sidebar - closed at end -->
+            <!--  end of header -->
+
+            <!-- <ui:include	src="menu.xhtml">
+		<ui:param name="projectName" value="seam1" />
+	</ui:include>  -->
+
+            <div class="body">
+               <ui:insert name="body" />
+            </div>
+
+
+            <div class="clr"></div>
+         </div>
+
+      </div>
+      <div class="footerContent"></div>
+
+      <div class="footer">
+         <ul class="address">
+            <li class="first">UCSD School of Medicine</li>
+            <li>9500 Gilman Drive, MC 0602</li>
+            <li>La Jolla, CA 92093</li>
+            <li>858-534-0830</li>
+         </ul>
+         <ul class="footerNav"></ul>
+         <div class="footerLogo">
+            <img class="logoFooter"
+               src="http://som.ucsd.edu/images/logoFooter.gif"
+               alt="UC San Diego - School of Medicine" />
+         </div>
+         <div class="copyright">
+            <p>Official Web Site of the University of California,
+               San Diego. Copyright &copy;2010 Regents of the University
+               of California. All rights reserved.</p>
+         </div>
+         <ul class="footerNav2"></ul>
+      </div>
+   </div>
+</body>
+   </html>
+
+</f:view>

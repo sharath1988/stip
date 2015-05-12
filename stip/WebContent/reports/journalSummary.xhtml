@@ -1,0 +1,231 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:c="http://java.sun.com/jstl/core"
+    template="/layout/template.xhtml">
+    
+    <a:keepAlive beanName="dataScrollerSummary" ajaxOnly="true"/>
+ <ui:define name="head">
+    <style type="text/css">
+        .rich-messages-marker img {padding-right:7px;}
+        .rich-message-label {color:red;}
+        .top {vertical-align:top;}
+        .warnClass {display: none;}
+        .infoClass {display: none;}
+        .errorClass {color: red;}
+    </style>
+ 
+ </ui:define>
+ <ui:define name="body">    	 
+    <h:form id="uploadExcelForm"> 
+    
+   <!--  <rich:messages layout="list" infoClass="infoClass" warnClass="warnClass" errorClass="errorClass">
+          <f:facet name="header">
+              <h:outputText value="Entered Data Status:"></h:outputText>
+          </f:facet>
+          <f:facet name="errorMarker">
+              <h:graphicImage value="/img/error.gif" />   
+          </f:facet>
+	  </rich:messages> -->
+	 
+	 <h:outputText id="invalidId" value="No Quarters found to generate Journals" style="color:green;font-weight:bold;font-size:20px;" rendered="#{empty summary.qrtList}"/>
+     <h:outputText id="outId" value="Journals For #{summary.quarterYear}" style="color:green;font-weight:bold;font-size:20px;" rendered="#{not empty summary.quarterYear}"/>
+     
+	  <s:decorate id="qtrYrId" template="/layout/edit.xhtml" rendered="#{not empty summary.qrtList}">
+		 <ui:define name="label">
+		   <h:outputText value="Select Quarter Year" />
+		 </ui:define>
+            <h:selectOneMenu value="#{summary.quarterYear}" 
+           					 required="true" requiredMessage="Quarter Year is required"
+           						>
+       		<s:selectItems value="#{summary.qrtList}" 
+       					   var="qrt" label="#{qrt}" itemValue="#{qrt}" 
+       					   noSelectionLabel="Select Quarter..."/>
+            </h:selectOneMenu>
+       </s:decorate>
+	 
+	  
+	  <s:decorate template="/layout/display.xhtml" rendered="#{not empty summary.qrtList}">
+	  <ui:define name="label">
+		 <a:commandButton value="Search" action="#{dataScrollerSummary.reset()}"
+		 	reRender="tabPanel,tabPanelDec,tabPanelMain,tabPanelText,qtrYrId,outId,invalidId" 
+		 	ignoreDupResponses="true">
+		 	 <a:support event="onclick" action="#{dataScrollerSummarySingle.reset()}" reRender="tabPanel,tabPanelDec,tabPanelMain,tabPanelText,qtrYrId,outId,invalidId"/>
+		 </a:commandButton>
+	  </ui:define>
+	   </s:decorate>
+	  
+	 <a:outputPanel id="tabPanel" rendered="#{not empty summary.qrtList}">
+	 
+	  <div style="text-align:right;padding-right:50px;">
+	  <s:link view="/reports/journal_rpt_excel.xhtml"
+									id="nonSingleExcelId"
+									rendered="#{not empty summary.nonSingleJournals or not empty summary.singleJournals}"
+									style="width:40px;"
+									title="Export as Excel">
+				 <h:graphicImage value="/img/filetype_excel.png" width="40px;"/>
+		</s:link>	
+	  </div>
+	 
+	 <s:decorate id="tabPanelDec" template="/layout/display.xhtml">
+	  <h:outputText id="tabPanelText" value="No Journals found for selected quarter" rendered="#{empty summary.nonSingleJournals and empty summary.singleJournals}" />
+	  <rich:tabPanel id="tabPanelMain" rendered="#{not empty summary.nonSingleJournals or not empty summary.singleJournals}"
+	  				 activeTabClass="activeTab" 
+	  				 inactiveTabClass="inactiveTab"
+	                 headerClass="tabHeader">
+	    <rich:tab label="Non Single Journal for #{summary.quarterYear}(#{summary.nonSingleJournals.size()} records)" 
+	    		  rendered="#{not empty summary.nonSingleJournals}" 
+	    		  switchType="ajax">
+	    	 <div style="text-align:right;padding-right:30px;">
+		    	
+				<h:commandButton id="textId" type="submit"
+					action="#{summary.textNonSingleJournals()}"
+					image="/img/textexprt.png"
+					style="width:40px;"
+					title="Export Non Single journal as text"
+					rendered="#{not empty summary.nonSingleJournals}"
+					>
+				</h:commandButton>
+				
+			</div>
+			<br />
+	    	<rich:dataTable id="tabPanelTable1" var="nonSingleJournal" value="#{summary.nonSingleJournals}" rows="25">
+	    		<rich:column sortBy="#{nonSingleJournal.sequenceNumber}"> 
+	    		   <f:facet name="header"><h:outputText value="Seq No"/></f:facet>
+	    		   <h:outputText value="#{nonSingleJournal.sequenceNumber}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{nonSingleJournal.journalType}"> 
+	    		   <f:facet name="header"><h:outputText value="Journal Type"/></f:facet>
+	    		   <h:outputText value="#{nonSingleJournal.journalType}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{nonSingleJournal.transactionDescription}" width="30%"> 
+	    		   <f:facet name="header"><h:outputText value="Transaction Description"/></f:facet>
+	    		   <h:outputText value="#{nonSingleJournal.transactionDescription}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{nonSingleJournal.documentReferenceNo}"> 
+	    		   <f:facet name="header"><h:outputText value="Doc Ref No"/></f:facet>
+	    		   <h:outputText value="#{nonSingleJournal.documentReferenceNo}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{nonSingleJournal.transactionAmount}"> 
+	    		   <f:facet name="header"><h:outputText value="Amount"/></f:facet>
+	    		   <h:outputText value="#{nonSingleJournal.transactionAmount}"> 
+	    		    <f:convertNumber currencySymbol="$" maxFractionDigits="2"/>
+	    		   </h:outputText>
+	    		</rich:column>
+	    		<rich:column sortBy="#{nonSingleJournal.debitCredit}" style="text-align:center;"> 
+	    		   <f:facet name="header"><h:outputText value="Debit/Credit"/></f:facet>
+	    		   <div style="text-align:center;">
+	    		   			<h:outputText value="#{nonSingleJournal.debitCredit}" style="text-align:center;" />
+	    		   </div>
+	    		</rich:column>
+	    		<rich:column sortBy="#{nonSingleJournal.coaCode}"> 
+	    		   <f:facet name="header"><h:outputText value="COA Code"/></f:facet>
+	    		   <h:outputText value="#{nonSingleJournal.coaCode}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{nonSingleJournal.indexCode}"> 
+	    		   <f:facet name="header"><h:outputText value="Index"/></f:facet>
+	    		   <h:outputText value="#{nonSingleJournal.indexCode}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{nonSingleJournal.fundCode}"> 
+	    		   <f:facet name="header"><h:outputText value="Fund"/></f:facet>
+	    		   <h:outputText value="#{nonSingleJournal.fundCode}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{nonSingleJournal.accountCode}"> 
+	    		   <f:facet name="header"><h:outputText value="Account"/></f:facet>
+	    		   <h:outputText value="#{nonSingleJournal.accountCode}" />
+	    		</rich:column>
+	    		<f:facet name="footer">
+	    		<rich:datascroller id="scroller1"  for="tabPanelTable1" renderIfSinglePage="false" 
+	    					page="#{dataScrollerSummary.scrollerPage}"  
+							align="#{dataScrollerSummary.scrollerAlign}" 
+							maxPages="#{dataScrollerSummary.scrollerMaxPages}" />
+	    		</f:facet>
+	    	</rich:dataTable>
+	    </rich:tab>
+	    
+	     <rich:tab label="Single Journal for #{summary.quarterYear}(#{summary.singleJournals.size()} records)" 
+	     			rendered="#{not empty summary.singleJournals}" 
+	     			switchType="ajax"
+	     			>
+	     	 <div style="text-align:right;padding-right:30px;">
+		    	
+				<h:commandButton id="textIdSingle" type="submit"
+					action="#{summary.textSingleJournals()}"
+					image="/img/textexprt.png"
+					style="width:40px;"
+					title="Export Single journal as text"
+					rendered="#{not empty summary.singleJournals}"
+					>
+				</h:commandButton>
+				
+			</div>
+			<br />
+	     	<rich:dataTable id="tabPanelTable2" var="singleJournal" value="#{summary.singleJournals}"  rows="25">
+	     		<rich:column sortBy="#{singleJournal.sequenceNumber}"> 
+	    		   <f:facet name="header"><h:outputText value="Seq No"/></f:facet>
+	    		   <h:outputText value="#{singleJournal.sequenceNumber}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{singleJournal.journalType}"> 
+	    		   <f:facet name="header"><h:outputText value="Journal Type"/></f:facet>
+	    		   <h:outputText value="#{singleJournal.journalType}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{singleJournal.transactionDescription}"> 
+	    		   <f:facet name="header">Transaction Description</f:facet>
+	    		   <h:outputText value="#{singleJournal.transactionDescription}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{singleJournal.documentReferenceNo}"> 
+	    		   <f:facet name="header"><h:outputText value="Doc Ref No"/></f:facet>
+	    		   <h:outputText value="#{singleJournal.documentReferenceNo}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{singleJournal.transactionAmount}"> 
+	    		   <f:facet name="header"><h:outputText value="Amount"/></f:facet>
+	    		   <h:outputText value="#{singleJournal.transactionAmount}"> 
+	    		    <f:convertNumber currencySymbol="$" maxFractionDigits="2"/>
+	    		   </h:outputText>
+	    		</rich:column>
+	    		<rich:column sortBy="#{singleJournal.debitCredit}"> 
+	    		   <f:facet name="header"><h:outputText value="Debit/Credit"/></f:facet>
+	    		    <div style="text-align:center;">
+	    		   		<h:outputText value="#{singleJournal.debitCredit}" />
+	    		   	</div>
+	    		</rich:column>
+	    		<rich:column sortBy="#{singleJournal.coaCode}"> 
+	    		   <f:facet name="header"><h:outputText value="COA Code"/></f:facet>
+	    		   <h:outputText value="#{singleJournal.coaCode}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{singleJournal.indexCode}"> 
+	    		   <f:facet name="header"><h:outputText value="Index"/></f:facet>
+	    		   <h:outputText value="#{singleJournal.indexCode}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{singleJournal.fundCode}"> 
+	    		   <f:facet name="header"><h:outputText value="Fund"/></f:facet>
+	    		   <h:outputText value="#{singleJournal.fundCode}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{singleJournal.accountCode}"> 
+	    		   <f:facet name="header"><h:outputText value="Account"/></f:facet>
+	    		   <h:outputText value="#{singleJournal.accountCode}" />
+	    		</rich:column>
+	    		<f:facet name="footer">
+	    		<rich:datascroller id="scroller2" for="tabPanelTable2" 
+	    					renderIfSinglePage="false" 
+	    					page="#{dataScrollerSummarySingle.scrollerPage}"  
+							align="#{dataScrollerSummarySingle.scrollerAlign}" 
+							maxPages="#{dataScrollerSummarySingle.scrollerMaxPages}"
+					      />
+	    		</f:facet>
+	    	</rich:dataTable>
+	    	
+	    </rich:tab>
+	  </rich:tabPanel>
+	 </s:decorate>
+	 </a:outputPanel>
+	  
+	</h:form>
+ </ui:define>
+</ui:composition>

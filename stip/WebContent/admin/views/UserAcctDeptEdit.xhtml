@@ -1,0 +1,46 @@
+<!-- 
+    ~ author : Sharath A.
+ -->
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+
+<ui:define name="body">
+
+    <h:form id="userAcctDept" styleClass="edit">
+
+        <rich:panel  style="height:500px;">
+            <f:facet name="header">#{userAcctDeptHome.managed ? 'Edit' : 'Assign'} Departments to the DBO  </f:facet>
+ 		<s:decorate id="zsdfgsd" template="/layout/display.xhtml">
+    	<h:selectManyListbox value="#{userAcctDeptHome.userAcctDeptsSelected}" size="20" >
+   			<s:selectItems value="#{userAcctDeptHome.userAcctDepts}" var="f"
+   			label="#{f.deptLongName}" itemValue="#{f.departmentId}" />
+   		</h:selectManyListbox>
+   		</s:decorate>
+   		 </rich:panel>
+        <div class="actionButtons">
+
+            <h:commandButton id="save"
+                          value="Save"
+                         action="#{userAcctDeptHome.saveUserDepts}"
+                      >
+            </h:commandButton>
+
+            <s:button id="cancelEdit"
+                      value="Cancel"
+                     view="/admin/views/UserAcctEdit.xhtml"/>
+        </div>
+    </h:form>
+  
+</ui:define>
+
+</ui:composition>
+
+

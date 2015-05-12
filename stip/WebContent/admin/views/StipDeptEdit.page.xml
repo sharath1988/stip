@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns="http://jboss.com/products/seam/pages"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.2.xsd"
+      no-conversation-view-id="/admin/views/StipDeptList.xhtml"
+      login-required="true">
+
+   <begin-conversation join="true" flush-mode="MANUAL"/>
+
+   <action execute="#{somMajorGroupList.init}"/>
+
+   <param name="stipDeptFrom"/>
+   <param name="stipDeptId" value="#{somMajorGroupList.stipDept.stipdeptId}"/>
+
+
+   <navigation from-action="#{stipDeptHome.persist}">
+      <rule if-outcome="persisted">
+         <end-conversation/>
+         <redirect view-id="/admin/views/StipDeptList.xhtml"/>
+      </rule>
+   </navigation>
+
+   <navigation from-action="#{stipDeptHome.update}">
+      <rule if-outcome="updated">
+         <end-conversation/>
+         <redirect view-id="/admin/views/StipDeptList.xhtml"/>
+      </rule>
+   </navigation>
+
+   <navigation from-action="#{stipDeptHome.remove}">
+      <rule if-outcome="removed">
+         <end-conversation/>
+         <redirect view-id="/admin/views/StipDeptList.xhtml"/>
+      </rule>
+   </navigation>
+
+</page>

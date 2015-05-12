@@ -1,0 +1,179 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+<ui:define name="head">
+	<a:loadScript src="/resources/waitDialog.js" />
+	 <style type="text/css">
+        .rich-messages-marker img {padding-right:7px;}
+        .rich-message-label {color:red;}
+        .top {vertical-align:top;}
+        .warnClass {display: none;}
+        .infoClass {display: none;}
+        .errorClass {color: red;}
+       </style>
+ </ui:define>
+<ui:define name="body">
+    <h:form id="stipDept" styleClass="edit" >
+      <rich:messages layout="list" infoClass="infoClass" warnClass="warnClass" errorClass="errorClass">
+      <f:facet name="header">
+              <h:outputText value="Entered Data Status:"></h:outputText>
+          </f:facet>
+          <f:facet name="errorMarker">
+              <h:graphicImage value="/img/error.gif" />   
+          </f:facet>
+	  </rich:messages>
+      <rich:panel>
+            <f:facet name="header">#{stipDeptHome.managed ? 'Edit' : 'Add'} Stip Department</f:facet>
+
+            <s:decorate id="deptField" template="/layout/display.xhtml" rendered="#{stipDeptHome.managed}">
+                <ui:define name="label">Department</ui:define>
+               <h:inputText value="#{somMajorGroupList.stipDeptHome.instance.dept}" readonly="true" size="50"/>
+            </s:decorate>
+
+			<s:decorate id="deptAddField" template="/layout/display.xhtml" rendered="#{not stipDeptHome.managed}">
+                <ui:define name="label">Select Department</ui:define>
+               <h:selectOneMenu id="deptComboValues" value="#{somMajorGroupList.stipDept.dept}" 
+                				 required="true" label="dept" requiredMessage="Please select department">
+					<s:selectItems value="#{somMajorGroupList.deptList}" var="dept_" noSelectionLabel="Select Dept..."
+							label="#{dept_}" itemValue="#{dept_}" />
+				   	<a:support event="onchange" reRender="indexComboValues,indeField,divisionFieldEdit,divComboValues"
+				   	  			action="#{somMajorGroupList.loadIndices()}" ajaxSingle="true"/> 
+				</h:selectOneMenu>
+            </s:decorate>
+            
+            
+            <s:decorate id="divisionField" template="/layout/display.xhtml" rendered="#{somMajorGroupList.stipDeptHome.managed}">
+                <ui:define name="label">Division</ui:define>
+                <h:inputText value="#{somMajorGroupList.stipDeptHome.instance.division}" size="50"/>
+                <a:commandLink value="clear" style="text-decoration:underline;" reRender="divisionField">
+                 <f:setPropertyActionListener target="#{stipDeptHome.instance.division}" value="#{null}" />
+                </a:commandLink>
+            </s:decorate>
+            <!--  rendered="#{not somMajorGroupList.stipDeptHome.managed and not empty somMajorGroupList.divisions}" -->
+            
+            <s:decorate id="divisionFieldEdit" template="/layout/edit.xhtml" rendered="#{not somMajorGroupList.stipDeptHome.managed}">
+                <ui:define name="label">Select Division</ui:define>
+                <h:selectOneMenu id="divComboValues" value="#{somMajorGroupList.stipDeptHome.instance.division}">
+					<s:selectItems value="#{somMajorGroupList.divisions}" var="div_" noSelectionLabel="Select Division"
+							label="#{div_}" itemValue="#{div_}" />
+				   	<a:support event="onblur" reRender="divisionFieldEdit" ajaxSingle="true"/> 
+				</h:selectOneMenu>
+            </s:decorate>
+            
+              <s:decorate id="stipFundField" template="/layout/display.xhtml" rendered="#{somMajorGroupList.stipDeptHome.managed}">
+                <ui:define name="label">Stip Fund Generated</ui:define>
+                 <h:inputText value="#{somMajorGroupList.stipDeptHome.instance.stipFund}" readonly="true"/>            					                 	                	
+            </s:decorate>
+            
+            
+             <s:decorate id="stipFundFieldEdit" template="/layout/edit.xhtml" rendered="#{not somMajorGroupList.stipDeptHome.managed}">
+                <ui:define name="label">Stip Fund Generated</ui:define>
+                 <h:inputText value="#{somMajorGroupList.stipDeptHome.instance.stipFund}" required="true" requiredMessage="Stip Fund is required">
+                   <a:support event="onblur" reRender="stipFundFieldEdit"  ajaxSingle="true"/>
+                 </h:inputText>            					                 	                	
+            </s:decorate>
+            
+            
+            <!--  rendered="#{not empty somMajorGroupList.indices}" -->
+            <s:decorate id="indeField" template="/layout/edit.xhtml">
+                <ui:define name="label">Index Deposited</ui:define>
+                <h:selectOneMenu id="indexComboValues" value="#{somMajorGroupList.stipDeptHome.instance.indx}" 
+                				 required="true" label="index" requiredMessage="Please select index">
+					<s:selectItems value="#{somMajorGroupList.indices}" var="index_" noSelectionLabel="Select an Index"
+							label="#{index_}" itemValue="#{index_}" />
+				   	<a:support event="onchange" reRender="indexComboValues, indeField, orgField, fundField,acctFieldEdit"
+				   	  			action="#{somMajorGroupList.populateOrgsAndFunds()}" ajaxSingle="true"/> 
+				   <a:support event="onblur" reRender="indeField" ajaxSingle="true"/>
+				</h:selectOneMenu>
+            </s:decorate>  
+                       
+            <s:decorate id="orgField" template="/layout/display.xhtml">
+                <ui:define name="label">Org</ui:define>                
+	                <h:inputText  value="#{somMajorGroupList.stipDeptHome.instance.org}" readonly="true">                  	            		                	               
+	                </h:inputText>
+            </s:decorate>
+            
+			<s:decorate id="fundField" template="/layout/display.xhtml">
+                <ui:define name="label">Stip Fund Deposited</ui:define>
+                	<h:inputText value="#{somMajorGroupList.stipDeptHome.instance.fund}" readonly="true" >                		                	                
+	                </h:inputText>                                                                 
+            </s:decorate>
+                              
+           <!--  <s:decorate id="stipFundField" template="/layout/edit.xhtml">
+                <ui:define name="label">Stip Fund</ui:define>     
+                 <h:selectOneMenu value="#{somMajorGroupList.stipDept.stipFund}" 
+                				 required="true" requiredMessage="Please select Stip Fund"
+                				 rendered="#{somMajorGroupList.stipDept.dept eq 'SOM Control'}">
+					<s:selectItems value="#{somMajorGroupList.stipFunds}" var="fund_" noSelectionLabel="Select an Stip Fund"
+							label="#{fund_}" itemValue="#{fund_}" />
+				</h:selectOneMenu>     -->    
+         
+                         
+          <!--   <s:decorate id="acctField" template="/layout/display.xhtml" rendered="#{somMajorGroupList.stipDeptHome.managed}">
+                <ui:define name="label">Acct</ui:define>
+                <h:inputText id="acct"                           
+                             maxlength="6"                      
+                             value="#{somMajorGroupList.stipDeptHome.instance.acct}"
+                             readonly="true">
+                </h:inputText>
+            </s:decorate> -->
+            
+            <s:decorate id="acctFieldEdit" template="/layout/edit.xhtml">
+                <ui:define name="label">Acct</ui:define>
+                <h:inputText id="acct"                           
+                             maxlength="6"                      
+                             value="#{somMajorGroupList.stipDeptHome.instance.acct}"
+                             required="true"
+                             requiredMessage="Acct is required"
+                             readonly="true">
+                    <a:support event="onblur" reRender="acctFieldEdit"  ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+            
+            <s:decorate id="notesField" template="/layout/edit.xhtml">
+                <ui:define name="label">Notes</ui:define>
+                <h:inputTextarea id="notes"
+                               cols="80"
+                               rows="3"
+                              value="#{stipDeptHome.instance.notes}"/>
+            </s:decorate>
+
+            <div style="clear:both">
+                <span class="required">*</span>
+                required fields
+            </div>
+
+        </rich:panel>
+
+        <div class="actionButtons">
+
+            <h:commandButton id="update"
+                          value="Save"
+                         action="#{stipDeptHome.update}"
+                       rendered="#{somMajorGroupList.stipDeptHome.managed}"/>      
+                       
+          <h:commandButton id="save"
+                          value="Save"
+                         action="#{stipDeptHome.persist}"
+                       rendered="#{!somMajorGroupList.stipDeptHome.managed}"/>                
+			
+            <s:button id="cancelEdit"
+                     value="Cancel"
+                     propagation="none"
+             		 includePageParams="false"
+                     view="/admin/views/StipDeptList.xhtml"
+               />
+              
+        </div>
+    </h:form>
+
+</ui:define>
+
+</ui:composition>

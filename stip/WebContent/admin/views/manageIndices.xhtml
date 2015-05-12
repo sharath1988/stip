@@ -1,0 +1,239 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:c="http://java.sun.com/jstl/core"
+    template="/layout/template.xhtml">
+	<ui:define name="head">
+	<a:loadScript src="/resources/waitDialog.js" />
+	 <style type="text/css">
+        .rich-messages-marker img {padding-right:7px;}
+        .rich-message-label {color:red;}
+        .top {vertical-align:top;}
+        .warnClass {display: none;}
+        .infoClass {display: none;}
+        .errorClass {color: red;}
+       </style>
+ </ui:define>
+  <ui:define name="body">    	 
+   <h:form id="manageIndicesForm">    	 
+            <rich:messages layout="list" infoClass="infoClass" warnClass="warnClass" errorClass="errorClass">
+		          <f:facet name="header">
+		              <h:outputText value="Entered Data Status:"></h:outputText>
+		          </f:facet>
+		          <f:facet name="errorMarker">
+		              <h:graphicImage value="/img/error.gif" />   
+		          </f:facet>
+	  		</rich:messages>
+
+		<h:outputText value="Manage Indices for #{audit.quarterYear}" style="color:green;font-weight:bold;font-size:20px;"/>
+		
+		 <a:outputPanel id="tabPanel">
+	  <h:outputText id="tabPanelText" value="No Missing/Inactive Indeices found " 
+	  rendered="#{empty audit.missingIndicesPanel.missIndices and empty audit.inactiveIndicesPanel.inactiveIndices}" />
+	  <s:link value="Click here to re run the audits" rendered="#{empty audit.missingIndicesPanel.missIndices and empty audit.inactiveIndicesPanel.inactiveIndices}" 
+	     propagation="end" includePageParams="false" view="/admin/views/uploadExcel.xhtml"></s:link>
+	  <rich:tabPanel id="tabPanelMain" rendered="#{not empty audit.missingIndicesPanel.missIndices or not empty audit.inactiveIndicesPanel.inactiveIndices}"
+	  				 activeTabClass="activeTab" 
+	  				 inactiveTabClass="inactiveTab"
+	                 headerClass="tabHeader"
+	                 switchType="ajax">
+	    <rich:tab id="tabPanel1" label="Missing Indexes for #{audit.quarterYear} (#{audit.missingIndicesPanel.missIndices.size()})" 
+	    		  rendered="#{not empty audit.missingIndicesPanel.missIndices}" 
+	    		  switchType="ajax">
+	       
+	       
+	       <div style="text-align:right;padding-right:20px;">
+	    	<h:commandButton id="excelId" type="submit"
+				action="#{org.jboss.seam.excel.exporter.excelExporter.export('manageIndicesForm:tabPanelTable1')}"
+				image="/img/filetype_excel.png"
+				style="width:30px;"
+				title="Export as Excel"
+				onclick="alert('Change file name accordingly while saving')"
+				>
+			</h:commandButton>
+			</div>
+	       
+	       <a:commandLink value="Expand to see all indexes" rendered="#{not audit.manageIdxExpand}" 
+	       				  action="#{audit.populateMissinactIndexes}"
+	       				  reRender="tabPanelTable1,tabPanelTable2,tabPanel,tabPanelMain"
+	       				  style="text-decoration: underline;">
+	         <f:setPropertyActionListener target="#{audit.manageIdxExpand}" value="#{true}" />
+	       </a:commandLink>
+	       
+	       <br />
+	      <!--  <h:outputText value="** Enter first three charecters in the 'Select Index' column and select from drop down. Donot enter it manually " 
+	       				rendered="#{not audit.manageIdxExpand}" style="color:red;"/> -->
+	       
+	        <a:commandLink 	value="Show by fund" rendered="#{audit.manageIdxExpand}" 
+	        				action="#{audit.populateMissinactIndexes}"
+	          				reRender="tabPanelTable1,tabPanelTable2,tabPanel,tabPanelMain">
+	         <f:setPropertyActionListener target="#{audit.manageIdxExpand}" value="#{false}" />
+	       </a:commandLink>
+	       
+	       
+	    		  
+	    	<rich:dataTable id="tabPanelTable1" var="misIndx" value="#{audit.missingIndicesPanel.missIndices}" rows="25">
+	    		<rich:column sortBy="#{misIndx.indx}" rendered="#{audit.manageIdxExpand}"> 
+	    		   <f:facet name="header"><h:outputText value="Index"/></f:facet>
+	    		   <h:outputText value="#{misIndx.indx}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{misIndx.fund}"> 
+	    		   <f:facet name="header"><h:outputText value="Fund"/></f:facet>
+	    		   <h:outputText value="#{misIndx.fund}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{misIndx.org}"> 
+	    		   <f:facet name="header"><h:outputText value="Org"/></f:facet>
+	    		   <h:outputText value="#{misIndx.org}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{misIndx.dept}"> 
+	    		   <f:facet name="header"><h:outputText value="Department"/></f:facet>
+	    		   <h:outputText value="#{misIndx.dept}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{misIndx.division}"> 
+	    		   <f:facet name="header"><h:outputText value="Division"/></f:facet>
+	    		   <h:outputText value="#{misIndx.division}"/>
+	    		</rich:column>
+	    		<rich:column sortBy="#{misIndx.code}" style="text-align:center;"> 
+	    		   <f:facet name="header"><h:outputText value="Code"/></f:facet>
+	    		   <div style="text-align:center;">
+	    		   			<h:outputText value="#{misIndx.code}" style="text-align:center;" >
+	    		   			  <f:convertNumber maxFractionDigits="0"/>
+	    		   			</h:outputText>
+	    		   </div>
+	    		</rich:column>
+	    		 <!-- <rich:column rendered="#{!audit.manageIdxExpand}"> 
+	    		   <f:facet name="header"><h:outputText value="Select Index"/></f:facet>
+		  			<h:inputText  id="indexName" maxlength="7" size="9"
+		  							value="#{misIndx.idxAdd}" 
+		  							rendered="#{not audit.fundsAssignedWithIndx.contains(misIndx.fund)}"
+		  							title="Start entering the first three letters and select index from drop down">
+		  			</h:inputText>
+                       <rich:suggestionbox var="_idx" for="indexName"  fetchValue="#{_idx}" minChars="3" 
+                       						suggestionAction="#{somMajorGroupList.getAllIndices}" nothingLabel="Index not found">
+                            <h:column >
+                                <h:outputText value="#{_idx}" />
+                            </h:column>
+                             	<a:support event="onselect" reRender="actionId" ajaxSingle="true">
+				   	  				<f:setPropertyActionListener value="#{true}" target="#{misIndx.update}" />
+				   	  			</a:support> 
+				  	 			<a:support event="onblur" reRender="indicesId" ajaxSingle="true"/>
+             		  </rich:suggestionbox>
+             		  <h:outputText  id="indexNameop"
+		  							value="#{misIndx.idxAdd}" 
+		  							rendered="#{audit.fundsAssignedWithIndx.contains(misIndx.fund)}">
+		  			</h:outputText>
+            	</rich:column>
+            	<rich:column id="actionId" rendered="#{!audit.manageIdxExpand}"> 
+	    		   <f:facet name="header"><h:outputText value="Action"/></f:facet>
+	    		   <a:commandLink value="Update" rendered="#{misIndx.update}" action="#{audit.updateMisIndx()}" style="text-decoration: underline;" reRender="tabPanel1,tabPanel,tabPanelMain,tabPanelTable2">
+	    		    <f:setPropertyActionListener target="#{audit.fundtoUpdate}" value="#{misIndx.fund}"/>
+	    		   </a:commandLink>
+	    		</rich:column> -->
+	    		
+	    		
+	    		<f:facet name="footer">
+	    		<rich:datascroller id="scroller1"  for="tabPanelTable1" renderIfSinglePage="false"/>
+	    		</f:facet>
+	    	</rich:dataTable>
+	    </rich:tab>
+	    
+	      <rich:tab  id="tabPanel2" label="Inactive Indexes for #{audit.quarterYear} (#{audit.inactiveIndicesPanel.inactiveIndices.size()})" 
+	    		  rendered="#{not empty audit.inactiveIndicesPanel.inactiveIndices}" 
+	    		  switchType="ajax">
+	    		  
+	        <div style="text-align:right;padding-right:20px;">
+	    	<h:commandButton id="excelId1" type="submit"
+				action="#{org.jboss.seam.excel.exporter.excelExporter.export('manageIndicesForm:tabPanelTable2')}"
+				image="/img/filetype_excel.png"
+				style="width:30px;"
+				title="Export as Excel"
+				onclick="alert('Change file name accordingly while saving')"
+				>
+			</h:commandButton>
+			</div>
+			<br />
+			<!-- 
+			<h:outputText value="** Enter first three charecters in the 'Select Index' column and select from drop down. Donot enter it manually " style="color:red;"/>
+	       	<br /> -->
+	    		  
+	    	<rich:dataTable id="tabPanelTable2" var="inactIdx" value="#{audit.inactiveIndicesPanel.inactiveIndices}" rows="25">
+	    		<rich:column sortBy="#{inactIdx.stipfund}"> 
+	    		   <f:facet name="header"><h:outputText value="Stip Fund"/></f:facet>
+	    		   <h:outputText value="#{inactIdx.stipfund}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{inactIdx.org}"> 
+	    		   <f:facet name="header"><h:outputText value="Org"/></f:facet>
+	    		   <h:outputText value="#{inactIdx.org}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{inactIdx.dept}"> 
+	    		   <f:facet name="header"><h:outputText value="Department"/></f:facet>
+	    		   <h:outputText value="#{inactIdx.dept}" />
+	    		</rich:column>
+	    		<rich:column sortBy="#{inactIdx.division}"> 
+	    		   <f:facet name="header"><h:outputText value="Division"/></f:facet>
+	    		   <h:outputText value="#{inactIdx.division}"/>
+	    		</rich:column>
+	    		<rich:column sortBy="#{inactIdx.code}" style="text-align:center;"> 
+	    		   <f:facet name="header"><h:outputText value="Code"/></f:facet>
+	    		   <div style="text-align:center;">
+	    		   			<h:outputText value="#{inactIdx.code}" style="text-align:center;" >
+	    		   				<f:convertNumber maxFractionDigits="0"/>
+	    		   			</h:outputText>
+	    		   </div>
+	    		</rich:column>
+	    		<rich:column sortBy="#{inactIdx.fund}"> 
+	    		   <f:facet name="header"><h:outputText value="Fund"/></f:facet>
+	    		   <h:outputText value="#{inactIdx.fund}" />
+	    		</rich:column>
+	    		
+	    		
+	    		<!--  <rich:column> 
+	    		   <f:facet name="header"><h:outputText value="Select Index"/></f:facet>
+		  			<h:inputText  id="indexName" maxlength="7" size="9"
+		  							value="#{inactIdx.idxAdd}" 
+		  							title="Start entering the first three letters and select index from drop down"
+		  							rendered="#{not audit.activatedIndices.contains(inactIdx.oldIdx)}" >
+		  			</h:inputText>
+                       <rich:suggestionbox var="_idx" for="indexName"  fetchValue="#{_idx}" minChars="3" 
+                       						suggestionAction="#{somMajorGroupList.getAllIndices}" nothingLabel="Index not found">
+                            <h:column >
+                                <h:outputText value="#{_idx}" />
+                            </h:column>
+                             	<a:support event="onselect" reRender="actionId" ajaxSingle="true">
+				   	  				<f:setPropertyActionListener value="#{true}" target="#{inactIdx.update}" />
+				   	  			</a:support> 
+				  	 			<a:support event="onblur" reRender="indicesId" ajaxSingle="true"/>
+             		  </rich:suggestionbox>
+             		   <h:outputText  id="indexNameop"
+		  							value="#{inactIdx.idxAdd}" 
+		  							rendered="#{audit.activatedIndices.contains(inactIdx.oldIdx)}">
+		  			</h:outputText>
+            	</rich:column>
+            	<rich:column id="actionId"> 
+	    		   <f:facet name="header"><h:outputText value="Action"/></f:facet>
+	    		    <a:commandLink value="Update" rendered="#{inactIdx.update}" action="#{audit.updateinactIdx()}" style="text-decoration: underline;" 
+	    		    				reRender="tabPanel1,tabPanel,tabPanelMain,tabPanelTable2">
+	    		    	<f:setPropertyActionListener target="#{audit.fundtoUpdate}" value="#{inactIdx.fund}"/>
+	    		   	</a:commandLink>
+	    		</rich:column> -->
+	    		<rich:column> 
+	    		   <f:facet name="header"><h:outputText value="Index"/></f:facet>
+	    		    <h:outputText value="#{inactIdx.idxAdd}" />
+	    		</rich:column>
+	    		<f:facet name="footer">
+	    		<rich:datascroller id="scroller2"  for="tabPanelTable2" renderIfSinglePage="false"/>
+	    		</f:facet>
+	    	</rich:dataTable>
+	    </rich:tab>
+	  </rich:tabPanel>
+	 </a:outputPanel>
+		
+  </h:form>
+ </ui:define>
+</ui:composition>

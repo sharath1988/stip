@@ -1,0 +1,205 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:a="http://richfaces.org/a4j"
+    template="/layout/template.xhtml">
+
+<ui:define name="body">
+<h:form>
+    
+    <s:decorate id="SelectDeptId" template="/layout/edit.xhtml">
+		 <ui:define name="label">
+		   <h:outputText value="Select Department"/>
+		 </ui:define>
+           <h:selectOneMenu id="SelectDept"  value="#{stipDeptList.stipDept.dept}">
+       		<s:selectItems value="#{stipDeptList.deptList}" var="dept" label="#{dept}" itemValue="#{dept}" noSelectionLabel="Select Dept..."/>
+            </h:selectOneMenu>
+       </s:decorate>
+	  
+	  <br /> <br /> <br />
+	  <h:commandButton id="search" value="Search"/>
+	  <s:button value="Reset" includePageParams="false">
+	  </s:button>
+	 	 <br />
+
+ <rich:panel>
+        <f:facet name="header">Stip Departments List (#{empty stipDeptList.resultList ? 0 : (stipDeptList.paginated ? stipDeptList.resultCount : stipDeptList.resultList.size)})</f:facet>
+    <div class="results" id="stipDeptList">
+
+    <h:outputText value="The stipDept search returned no results."
+               rendered="#{empty stipDeptList.resultList}"/>
+
+    <rich:dataTable id="stipDeptListTable"
+                var="_stipDept"
+                rows="25"
+                value="#{stipDeptList.resultList}"
+                rendered="#{not empty stipDeptList.resultList}">
+        
+        <rich:column sortBy="#{_stipDept.dept}" filterBy="#{_stipDept.dept}" filterEvent="onkeyup">
+            <f:facet name="header"> 
+               <h:outputText value="Department" />
+            </f:facet>
+            <h:outputText value="#{_stipDept.dept}"/>
+        </rich:column>
+        <rich:column sortBy="#{_stipDept.division}" filterBy="#{_stipDept.division}" filterEvent="onkeyup">
+            <f:facet name="header"> 
+               <h:outputText value="Division" />
+            </f:facet>
+            <h:outputText value="#{_stipDept.division}"/>
+        </rich:column>
+         <rich:column sortBy="#{_stipDept.stipFund}" filterBy="#{_stipDept.stipFund}" filterEvent="onkeyup">
+            <f:facet name="header"> 
+               <h:outputText value="Stip Fund Generated" />
+            </f:facet>
+            <h:outputText value="#{_stipDept.stipFund}"/>
+        </rich:column>        
+        <rich:column sortBy="#{_stipDept.indx}" filterBy="#{_stipDept.indx}" filterEvent="onkeyup">
+            <f:facet name="header"> 
+               <h:outputText value="Index Deposited" />
+            </f:facet>
+            <h:outputText value="#{_stipDept.indx}"/>
+        </rich:column>
+        <rich:column sortBy="#{_stipDept.org}" filterBy="#{_stipDept.org}" filterEvent="onkeyup">
+            <f:facet name="header"> 
+               <h:outputText value="Org" />
+            </f:facet>
+            <h:outputText value="#{_stipDept.org}"/>
+        </rich:column>                
+         <rich:column sortBy="#{_stipDept.fund}" filterBy="#{_stipDept.fund}" filterEvent="onkeyup">
+            <f:facet name="header"> 
+               <h:outputText value="Stip Fund Deposited" />
+            </f:facet>
+            <h:outputText value="#{_stipDept.fund}"/>
+        </rich:column>
+        <rich:column sortBy="#{_stipDept.acct}" filterBy="#{_stipDept.acct}" filterEvent="onkeyup">
+            <f:facet name="header"> 
+               <h:outputText value="Acct" />
+            </f:facet>
+            <h:outputText value="#{_stipDept.acct}"/>
+        </rich:column>        
+        
+         <rich:column sortBy="#{_stipDept.status}">
+            <f:facet name="header"> 
+               <h:outputText value="Status" />
+            </f:facet>
+            <h:outputText value="#{_stipDept.status?'Enabled':'Disabled'}"/>
+        </rich:column>     
+           
+       <rich:column sortBy="#{_stipDept.notes}" filterBy="#{_stipDept.notes}" filterEvent="onkeyup">
+            <f:facet name="header"> 
+               <h:outputText value="Notes" />
+            </f:facet>
+            <h:outputText value="#{_stipDept.notes}"/>
+        </rich:column>         
+        
+        <rich:column styleClass="action">
+            <f:facet name="header">Action</f:facet>
+            <s:link view="/admin/views/StipDeptEdit.xhtml"
+                   value="Edit"
+             propagation="none"
+                      id="stipDeptEdit"
+                rendered="#{empty from}">
+                <f:param name="stipDeptId"
+                        value="#{_stipDept.stipdeptId}"/>
+            </s:link>
+            <rich:spacer width="10px;"></rich:spacer>
+             <s:link 
+                   value="#{_stipDept.status?'Disable':'Enable'}"
+             	   propagation="none"
+                   rendered="#{empty from}"
+                   action="#{stipDeptList.enableDiable()}">
+                    <f:param name="stipDeptId"
+                        value="#{_stipDept.stipdeptId}"/>
+            </s:link>
+            
+        </rich:column>
+        
+         <f:facet name="footer">
+			<rich:datascroller renderIfSinglePage="false" for="stipDeptListTable"/>
+		 </f:facet>
+    </rich:dataTable>
+
+    </div>
+ </rich:panel>
+    
+
+  
+
+ <!--    <div class="tableControl">
+
+        <s:link view="/admin/views/StipDeptList.xhtml"
+            rendered="#{stipDeptList.previousExists}"
+               value="#{messages.left}#{messages.left} First Page"
+                  id="firstPage">
+          <f:param name="firstResult" value="0"/>
+        </s:link>
+
+        <s:link view="/admin/views/StipDeptList.xhtml"
+            rendered="#{stipDeptList.previousExists}"
+               value="#{messages.left} Previous Page"
+                  id="previousPage">
+            <f:param name="firstResult"
+                    value="#{stipDeptList.previousFirstResult}"/>
+        </s:link>
+
+        <s:link view="/admin/views/StipDeptList.xhtml"
+            rendered="#{stipDeptList.nextExists}"
+               value="Next Page #{messages.right}"
+                  id="nextPage">
+            <f:param name="firstResult"
+                    value="#{stipDeptList.nextFirstResult}"/>
+        </s:link>
+
+        <s:link view="/admin/views/StipDeptList.xhtml"
+            rendered="#{stipDeptList.nextExists}"
+               value="Last Page #{messages.right}#{messages.right}"
+                  id="lastPage">
+            <f:param name="firstResult"
+                    value="#{stipDeptList.lastFirstResult}"/>
+        </s:link>
+
+    </div>  -->
+
+    <s:div styleClass="actionButtons" rendered="#{empty from}">
+        <s:button view="/admin/views/StipDeptEdit.xhtml"
+                    id="create"
+		           propagation="end"
+		           includePageParams="false"
+		           value="Add New Stip Department">
+        </s:button>
+        
+        <s:button view="/admin/views/StipDeptCtrlList.xhtml"
+                    id="createCtrl"
+           propagation="none"
+                 value="Manage Stip Department Control">
+            <f:param name="stipDeptId"/>
+        </s:button>
+        
+         <s:button 	propagation="end"
+                 	value="Reset"
+                 	includePageParams="false">
+        </s:button>
+        
+    </s:div>
+  <!--   <a:status id="ajaxStatusId"
+   			onstart="#{rich:component('ajaxLoadingModalBox')}.show()"
+   			onstop="#{rich:component('ajaxLoadingModalBox')}.hide()" />
+
+      
+       <rich:modalPanel id="ajaxLoadingModalBox" minHeight="85" minWidth="95"
+ 			height="35" width="100" zindex="2000" style="background-color: #ffffff; width: 100%; border-width: 0px; border-color: #ffffff; 
+ 			border-style: solid; text-align: center;">
+			<h:panelGrid columns="1" style="border-width: 0px; text-align: center;">
+		 		<h:outputText value="please wait..." style="font-weight: bold;"/>
+		 		 <h:graphicImage value="/img/progress.gif" alt="please wait..." style="background-color: #ffffff;"/>
+	 		</h:panelGrid>
+	  </rich:modalPanel>  -->
+</h:form>
+</ui:define>
+
+</ui:composition>

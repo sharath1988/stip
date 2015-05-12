@@ -1,0 +1,48 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:a="http://richfaces.org/a4j"
+    template="layout/template.xhtml">
+  <ui:define name="body">    	 
+   <h:form id="uploadExcelForm" enctype="multipart/form-data" styleClass="edit">      
+      <div class="seamContent">
+		<h1>Welcome to Short Term Investment Pool Application</h1>
+			<rich:panel>
+				<h:panelGroup rendered="#{not identity.isLoggedIn()}">
+					<h3 style="color:red">You are not logged into this application</h3>
+					<p>You do not have access to this application. You will be able to login to this 
+							application only if you are a UCSD employee. If you are a UCSD Employee and
+							need access to this application, Please contact BADG Group for access.
+					</p>
+					<h3>Have a nice day !</h3>			
+				 </h:panelGroup>
+                 <h:panelGroup rendered="#{s:hasRole('stip_user') or s:hasRole('dbo') or s:hasRole('stip_admin')}">
+					<h3>The STIP Application processes interest calculations and distributions to a Fund which is 
+					shared across various Departments every quarter.</h3>
+					<h3>This Application produces Summary Reports and Department Reports for Users. </h3>					    
+                 </h:panelGroup>
+				 <h:panelGroup rendered="#{s:hasRole('stip_admin')}">						
+					<h2>Instructions for STIP Administrators</h2>						
+					<p>The administration link allows you to: </p>
+					<ul>							
+						<li>Upload GA Excel Workbook</li>
+						<li>Perform Audits</li>
+						<li>Manage Missing and Inactive Indices and Export as Excel for reference to Manage Stip Depts/Indexes</li>
+						<li>Manage Stip Depts/Indexes</li>
+						<li>Update Document Number</li>
+						<li>Reverse Journal</li>
+						<li>View Journals and Export Journals as Excel and Text files</li>
+						<li>Manage Stip Users, Roles and Departments for DBO</li>	
+						<li>Generate Quarterly Detail and Fiscal Year Reports and Export Reports as Excel</li>									
+					</ul>							
+				  </h:panelGroup>
+			  </rich:panel>
+	   	  </div>
+	   </h:form>
+   </ui:define>
+</ui:composition>

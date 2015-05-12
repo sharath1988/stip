@@ -1,0 +1,119 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:c="http://java.sun.com/jstl/core"
+    template="/layout/template.xhtml">
+	<ui:define name="head">
+	<a:loadScript src="/resources/waitDialog.js" />
+	 <style type="text/css">
+        .rich-messages-marker img {padding-right:7px;}
+        .rich-message-label {color:red;}
+        .top {vertical-align:top;}
+        .warnClass {display: none;}
+        .infoClass {color: green;}
+        .errorClass {color: red;}
+       </style>
+     <ui:include src="/admin/views/manageDocPopup.html" />
+ </ui:define>
+  <ui:define name="body">    	 
+   <h:form id="manageJournalDocForm">    	 
+            <rich:messages id="mess" layout="list" infoClass="infoClass" warnClass="warnClass" errorClass="errorClass">
+		          <f:facet name="header">
+		              <h:outputText value="Entered Data Status:"></h:outputText>
+		          </f:facet>
+		          <f:facet name="errorMarker">
+		              <h:graphicImage value="/img/error.gif" />   
+		          </f:facet>
+		          <f:facet name="infoMarker">
+		              <h:graphicImage value="/img/msginfo.png" />   
+		          </f:facet>
+	  		</rich:messages>
+
+		<h:outputText value="Manage Journal Document Number" style="color:green;font-weight:bold;font-size:20px;"/>
+		<rich:panel id="journalsPanel">
+        <f:facet name="header">Journal Search Results (#{empty journalList.resultList ? 0 : journalList.resultList.size} records)</f:facet>
+	    <div class="results" id="journalList">
+	    	<h:outputText value="The journal search returned no results."
+               rendered="#{empty journalList.resultList}"/>
+               <rich:dataTable id="journalTable" var="journal" value="#{journalList.resultList}" rows="25"
+               					rendered="#{not empty journalList.resultList}">
+	    		<rich:column sortBy="#{journal.qrt}" > 
+	    		   <f:facet name="header"><h:outputText value="Quarter Year"/></f:facet>
+	    		   <h:outputText value="#{journal.qrt}" />
+	    		</rich:column>
+	    		
+	    		
+	    		<rich:column sortBy="#{journal.type}"> 
+	    		   <f:facet name="header"><h:outputText value="Type"/></f:facet>
+	    		   <h:outputText value="#{journal.type}"/>
+	    		</rich:column>
+	    		
+	    		<rich:column sortBy="#{journal.docnum}" > 
+	    		   <f:facet name="header"><h:outputText value="Document Number"/></f:facet>
+	    		   <h:outputText value="#{journal.docnum}"  style="opacity:0.5;" rendered="#{not empty journal.docnum and journal.reversed}"/>
+	    		   <h:outputText value="#{journal.docnum}"  rendered="#{not empty journal.docnum and not journal.reversed}"/>
+	    		</rich:column>
+	    		
+	    		<rich:column sortBy="#{journal.dateModified}" > 
+	    		   <f:facet name="header"><h:outputText value="Date Updated"/></f:facet>
+	    		   <h:outputText value="#{journal.dateModified}">
+	    		   		<s:convertDateTime dateStyle="short" type="both" />
+	    		   </h:outputText>
+	    		</rich:column>
+	    		
+	    		<rich:column style=" text-align: center;"> 
+	    		  <f:facet name="header"><h:outputText value="Action"/></f:facet>
+	    		   <a:commandLink value="Reverse Journal" rendered="#{not journal.reversed and not empty journal.docnum}" 
+	    		                  action="#{journalList.reverseJournal(journal.qrt,journal.type)}"
+	    		                  style="text-decoration: underline;"
+	    		                  onclick="if(!confirm('Are you sure you want to reverse the jounrnal?')) return false;" 
+	    		                  reRender="mess,journalTable,journalsPanel,manageJournalDocForm"
+	    		                  >
+	    		   </a:commandLink>
+	    		   
+	    		   <a:commandLink value="Reversed" rendered="#{journal.reversed}" 
+	    		                  style="opacity: 0.5;"
+	    		                  >
+	    		   </a:commandLink>
+	    		   <rich:spacer width="15"></rich:spacer>
+	    		   <a:commandLink
+	                  		value="Add Document Number"  
+	                  		style="text-decoration: underline;"
+	                  		oncomplete="Richfaces.showModalPanel('updateDocModel')"
+	                  		reRender="editPopUppanel"
+	                  		rendered="#{empty journal.docnum}"
+	                        >
+	                  <f:setPropertyActionListener value="#{journal.journalId}" target="#{journalList.journal.journalId}" />
+	                   <f:setPropertyActionListener value="#{journal.qrt}" target="#{journalList.journal.qrt}" />
+	                    <f:setPropertyActionListener value="#{journal.docnum}" target="#{journalList. journal.docnum}" />
+	                  
+	               </a:commandLink>
+	                <a:commandLink
+	                  		value="Update Document Number"  
+	                  		style="text-decoration: underline;"
+	                  		oncomplete="Richfaces.showModalPanel('updateDocModel')"
+	                  		reRender="editPopUppanel"
+	                  		rendered="#{not journal.reversed and not empty journal.docnum}"
+	                        >
+	                  <f:setPropertyActionListener value="#{journal.journalId}" target="#{journalList.journal.journalId}" />
+	                   <f:setPropertyActionListener value="#{journal.qrt}" target="#{journalList.journal.qrt}" />
+	                    <f:setPropertyActionListener value="#{journal.docnum}" target="#{journalList. journal.docnum}" />
+	                  
+	               </a:commandLink>
+	    		</rich:column>
+	    		<f:facet name="footer">
+	    		<rich:datascroller id="scroller"  for="journalTable" renderIfSinglePage="false"/>
+	    		</f:facet>
+	    	</rich:dataTable>
+	    </div>
+	    </rich:panel>
+	    
+  </h:form>
+ </ui:define>
+</ui:composition>

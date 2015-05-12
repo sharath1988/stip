@@ -1,0 +1,49 @@
+<!-- 
+    ~ author : Sharath A.
+ -->
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    >
+    <a:outputPanel id="editPopUppanel" layout="inline">
+	 	<rich:modalPanel id="updateDocModel" height="200" width="400">
+		   <f:facet name="header">
+		        <h:outputText value="#{empty journalList.journal.docnum ? 'Add':'Update'} Document Number for Journal #{journalList.journal.qrt}"  styleClass="boldText"/>
+		   </f:facet>
+		    <h:form  styleClass="edit">
+		    <h:messages id="messPop"/>
+		 		<s:decorate  template="/layout/edit.xhtml">
+		 		 <ui:define name="label">#{empty journalList.journal.docnum ? 'Add Document Number':'Edit Document Number'}</ui:define>
+			    	<h:inputText id="input" value="#{journalList.journal.docnum}" 
+					                 required="true" requiredMessage="Document Number is required.">
+					   <a:support event="onblur" reRender="input"></a:support>
+					</h:inputText>
+		   		 </s:decorate>
+		        <div class="stipNavPanel">
+		         <br />
+		   		 <br />
+		   		  <br />
+		            <a:commandButton id="save"
+		                          value="#{empty journalList.journal.docnum ? 'Save':'Update'}"
+		                         action="#{journalList.updateDocNum()}"
+		                         oncomplete ="if (#{facesContext.maximumSeverity==null})Richfaces.hideModalPanel('updateDocModel')"
+		                         reRender="mess,messPop,journalTable,journalsPanel"
+		                      >
+		            </a:commandButton>
+		            <s:button id="cancelEdit"
+		                      value="Cancel"
+		                      action="#{journalList.resetJournal}"
+		                     includePageParams="false"/>
+		        </div>
+		    </h:form>
+	    </rich:modalPanel>
+    </a:outputPanel>
+</ui:composition>
+
+

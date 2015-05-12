@@ -1,0 +1,141 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<e:workbook ignoreBlanks="false"
+	filename="quarterly_detail_#{summaryReport.quarterYears}"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:e="http://jboss.com/products/seam/excel"
+	xmlns:a="http://richfaces.org/a4j" 
+	template="/layout/template.xhtml">
+
+
+
+
+	<e:worksheet id="summaryReport"
+		name="quarterly_detail_#{summaryReport.quarterYears}"
+		var="_nonsingle" value="#{summaryReport.summaryReportCombined}"
+		>
+
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Department"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_nonsingle.dept}" />
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Division"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_nonsingle.division}" />
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="FY_QRT"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_nonsingle.fyQrt}" />
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Index generated"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_nonsingle.indx}" />
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Fund generated"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_nonsingle.fund}"/>
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Index deposited"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_nonsingle.depToIdx}" />
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Fund deposited"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_nonsingle.depToFund}"/>
+		</e:column>
+
+       <e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Amount"
+					style="xls-background-color: GRAY_25; xls-font-bold:true;"  />
+			</f:facet>
+			<e:cell value="#{_nonsingle.amount}" style="xls-format-mask:0.00"/>
+			
+		</e:column>
+	</e:worksheet>
+
+
+	<!-- <e:worksheet id="journalSummarySingle"
+		name="single_#{summaryReport.quarterYears}"
+		var="_single" value="#{summaryReport.summaryReportSingle}">
+
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Department"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_single.dept}" />
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Division"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_single.division}" />
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="FY_QRT"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_single.fyQrt}" />
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Fund"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_single.fund}"/>
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Dept to Index"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_single.depToIndex}" />
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Dept to Fund"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_single.depToFund}"/>
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Amount"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_single.amount}"/>
+		</e:column>
+	</e:worksheet> -->
+
+</e:workbook>
+
+

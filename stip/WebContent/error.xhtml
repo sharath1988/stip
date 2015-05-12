@@ -1,0 +1,31 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    template="layout/template.xhtml"
+    >
+
+    <ui:param name="showGlobalMessages" value="false"/>
+    <ui:define name="body">
+
+
+ 		<h1>Error</h1>
+ 		 <h:messages id="errorMessage" styleClass="message"/>
+        <p>
+         The application encountered an error:<br />
+ 		 If you haven't been actively using the application, it could be you were timed out for security reasons and need to restart the application.<br />
+ 		 If the network is experiencing heavy volume, it could be the application timed out waiting for page data to load.<br />
+  		 In these cases, close all open web browser windows, wait a few minutes, then try again.<br /><br />
+		 If, after closing your web browser (i.e. Firefox or Internet Explorer), you can repeat the error then 
+ 		 send an email message to the Business Application Development Group.<br />
+		 Email: hs-support@ucsd.edu<br /><br />
+  		 Indicate the name or a description of the application you were using.<br />
+  		 The action you were trying to perform.<br />
+  		 The text of the error message you received (screenshots are helpful).
+  		</p>
+    </ui:define>
+</ui:composition>

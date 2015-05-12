@@ -1,0 +1,107 @@
+<!-- 
+    ~ author : Sharath A.
+ -->
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+<ui:define name="body">
+    <rich:panel>
+        <f:facet name="header"> User Details</f:facet>
+        <s:decorate id="ucsdId" template="/layout/display.xhtml">
+            <ui:define name="label">Ucsd id</ui:define>
+            <h:outputText value="#{userAcctHome.instance.ucsdId}"/>
+        </s:decorate>
+        <s:decorate id="name" template="/layout/display.xhtml">
+            <ui:define name="label">Name</ui:define>
+            <h:outputText value="#{userAcctHome.instance.name}"/>
+        </s:decorate>
+        <!-- <s:decorate id="username" template="/layout/display.xhtml">
+            <ui:define name="label">Username</ui:define>
+            <h:outputText value="#{userAcctHome.instance.username}"/>
+        </s:decorate> -->
+        <s:decorate id="firstName" template="/layout/display.xhtml">
+            <ui:define name="label">First name</ui:define>
+            <h:outputText value="#{userAcctHome.instance.firstName}"/>
+        </s:decorate>
+        <s:decorate id="lastName" template="/layout/display.xhtml">
+            <ui:define name="label">Last name</ui:define>
+            <h:outputText value="#{userAcctHome.instance.lastName}"/>
+        </s:decorate>
+        <s:decorate id="email" template="/layout/display.xhtml">
+            <ui:define name="label">Email</ui:define>
+            <h:outputText value="#{userAcctHome.instance.email}"/>
+        </s:decorate>
+        <s:decorate id="funcArea" template="/layout/display.xhtml">
+            <ui:define name="label">Func area</ui:define>
+            <h:outputText value="#{userAcctHome.instance.funcArea}"/>
+        </s:decorate>
+        <div style="clear:both"/>
+    </rich:panel>
+    <rich:tabPanel switchType="ajax" activeTabClass="activeTab" inactiveTabClass="inactiveTab">
+    <rich:tab>
+        <f:facet name="label">
+            <h:panelGroup><h:graphicImage value="/img/onetomany.gif" style="vertical-align: middle; padding-right: 4px;"/> user roles</h:panelGroup>
+        </f:facet>
+    <h:form styleClass="association" id="userAcctRolesChildren">
+        <h:outputText value="There are no roles associated with this user."
+                   rendered="#{empty userAcctHome.userAcctRoles}"/>
+        <rich:dataTable value="#{userAcctHome.userAcctRoles}"
+                       var="_userAcctRole"
+                  rendered="#{not empty userAcctHome.userAcctRoles}"
+                rowClasses="rvgRowOne,rvgRowTwo"
+                        id="userAcctRolesTable">
+            <rich:column sortBy="#{_userAcctRole.userRole.role}">
+                <f:facet name="header">Role Name</f:facet>
+                <h:outputText value="#{_userAcctRole.userRole.role}"/>
+            </rich:column>
+            <rich:column sortBy="#{_userAcctRole.isPrimary}">
+                <f:facet name="header">Is primary</f:facet>
+                <h:outputText value="#{_userAcctRole.isPrimary}"/>
+            </rich:column>
+        </rich:dataTable>
+    </h:form>
+    <div class="actionButtonsRight">
+        <s:button 
+               value="Done"
+                view="/admin/views/UserList.xhtml" propagation="end">
+        </s:button>
+    </div>
+    </rich:tab>
+    <rich:tab>
+        <f:facet name="label">
+            <h:panelGroup><h:graphicImage value="/img/onetomany.gif" style="vertical-align: middle; padding-right: 4px;"/> user departments</h:panelGroup>
+        </f:facet>
+    <h:form styleClass="association" id="userAcctDeptsChildren">
+        <h:outputText value="There are no departments associated with user."
+                   rendered="#{empty userAcctHome.userAcctDepts}"/>
+        <rich:dataTable value="#{userAcctHome.userAcctDepts}"
+                       var="_userAcctDept"
+                  rendered="#{not empty userAcctHome.userAcctDepts}"
+                rowClasses="rvgRowOne,rvgRowTwo"
+                        id="userAcctDeptsTable">
+            <rich:column sortBy="#{_userAcctDept.department.deptLongName}">
+                <f:facet name="header">Department Name</f:facet>
+                <h:outputText value="#{_userAcctDept.department.deptLongName}"/>
+            </rich:column>
+            <rich:column sortBy="#{_userAcctDept.isPrimary}">
+                <f:facet name="header">Is primary</f:facet>
+                <h:outputText value="#{_userAcctDept.isPrimary}"/>
+            </rich:column>
+        </rich:dataTable>
+    </h:form>
+    <div class="actionButtonsRight">
+        <s:button
+               value="Done"
+                view="/admin/views/UserList.xhtml" propagation="end">
+        </s:button>
+    </div>
+    </rich:tab>
+</rich:tabPanel>
+</ui:define>
+</ui:composition>

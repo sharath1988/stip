@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns="http://jboss.com/products/seam/pages"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.2.xsd">
+
+
+
+   <param name="firstResult" value="#{userAcctList.firstResult}"/>
+   <param name="sort" value="#{userAcctList.orderColumn}"/>
+   <param name="dir" value="#{userAcctList.orderDirection}"/>
+   <param name="logic" value="#{userAcctList.restrictionLogicOperator}"/>
+
+   <param name="from"/>
+   <param name="ucsdId" value="#{userAcctList.userAcct.ucsdId}"/>
+   <param name="name" value="#{userAcctList.userAcct.name}"/>
+   <param name="username" value="#{userAcctList.userAcct.username}"/>
+   <param name="passwordHash" value="#{userAcctList.userAcct.passwordHash}"/>
+   <param name="firstName" value="#{userAcctList.userAcct.firstName}"/>
+   <param name="middleName" value="#{userAcctList.userAcct.middleName}"/>
+   <param name="lastName" value="#{userAcctList.userAcct.lastName}"/>
+   <param name="email" value="#{userAcctList.userAcct.email}"/>
+   <param name="addUsername" value="#{userAcctHome.instance.name}"/>
+   <param name="addUserEmpId" value="#{userAcctHome.instance.coreUserId}"/>
+   <param name="addUserHomeDeptname" value="#{userAcctHome.instance.funcArea}"/>      
+   <param name="addUserRolname" value="#{userAcctHome.roleId}"/>
+
+
+ <navigation from-action="#{userAcctHome.addUserAcctRoles}">
+      <rule if-outcome="persisted">
+         <end-conversation/>
+         <redirect view-id="/admin/views/UserList.xhtml"/>
+      </rule>
+   </navigation>
+</page>

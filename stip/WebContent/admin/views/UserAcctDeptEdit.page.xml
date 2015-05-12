@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns="http://jboss.com/products/seam/pages"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.2.xsd"
+      login-required="true">
+
+   <begin-conversation join="true"/>
+
+   <action execute="#{userAcctDeptHome.wire}"/>
+
+   <param name="userAcctDeptFrom"/>
+   <param name="userAcctDeptAccountId" value="#{userAcctDeptHome.userAcctDeptId.accountId}"/>
+   <param name="userAcctDeptDeptId" value="#{userAcctDeptHome.userAcctDeptId.departmentId}"/>
+   <param name="userAcctFrom"/>
+   <param name="userAcctAccountId" value="#{userAcctHome.userAcctAccountId}"/>
+
+   <param name="departmentFrom"/>
+   <param name="departmentDepartmentId" value="#{departmentHome.departmentDepartmentId}"/>
+
+
+
+   <navigation from-action="#{userAcctDeptHome.saveUserDepts}">
+      <rule if-outcome="persisted">
+         <end-conversation/>
+         <redirect view-id="/admin/views/UserAcctEdit.xhtml"/>
+      </rule>
+   </navigation>
+
+</page>

@@ -1,0 +1,45 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    template="/layout/template.xhtml">
+ <ui:define name="head">
+	<a:loadScript src="/resources/waitDialog.js" />
+	 <style type="text/css">
+        .rich-messages-marker img {padding-right:7px;}
+        .rich-message-label {color:red;}
+        .top {vertical-align:top;}
+        .warnClass {display: none;}
+        .infoClass {display: none;}
+        .errorClass {color: red;}
+       </style>
+ </ui:define>
+  <ui:define name="body">    	 
+   <h:form id="uploadExcelForm">    	 
+    <a:queue id="queId" ignoreDupResponses="true" requestDelay="1000"/>	
+
+
+		<h:outputText value="Audits For #{audit.quarterYear}" style="color:green;font-weight:bold;font-size:20px;"/>
+		<br />
+		<h:panelGrid columns="3" style="border:none;">
+		       <h:graphicImage value="/img/wrong.png" width="10%;" rendered="#{audit.ifisGaDiff}"/>
+		       <h:graphicImage value="/img/right.png" width="10%;" rendered="#{not audit.ifisGaDiff}"/>
+		    <h:outputText value="Stip Posted in IFIS vs GA Excel sheet uploaded"/>
+		       <h:graphicImage value="/img/wrong.png" width="10%;" rendered="#{audit.missIndices.size() gt 0}"/>
+		       <h:graphicImage value="/img/right.png" width="10%;" rendered="#{audit.missIndices.size() eq 0}"/>
+		    <h:outputText value="Missing indices while creating journals" />
+		       <h:graphicImage value="/img/wrong.png" width="10%;"  rendered="#{audit.inactiveIndices.size() gt 0}"/>
+		       <h:graphicImage value="/img/right.png" width="10%;"  rendered="#{audit.inactiveIndices.size() eq 0}"/>
+		     <h:outputText value="Inactive indices while creating journals" />
+		       <h:graphicImage value="/img/wrong.png" width="10%;" rendered="#{not audit.signMismatch}"/>
+		       <h:graphicImage value="/img/right.png" width="10%;" rendered="#{audit.signMismatch}"/>
+		    <h:outputText value="Stip and Fund balance Sign Mismatches" />
+		</h:panelGrid>
+  </h:form>
+ </ui:define>
+</ui:composition>

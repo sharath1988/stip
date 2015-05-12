@@ -1,0 +1,51 @@
+<!-- 
+    ~ author : Sharath A.
+ -->
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    >
+    <a:outputPanel id="editPopUppanel" layout="inline">
+	 	<rich:modalPanel id="editRolePopUp" height="200" width="400">
+		   <f:facet name="header">
+		        <h:outputText value="Edit User Role"  styleClass="boldText"/>
+		   </f:facet>
+		    <h:form id="editRole" styleClass="edit">
+		 		<s:decorate id="editRoleId" template="/layout/display.xhtml">
+		 		 <ui:define name="label">Select Role </ui:define>
+			    	<h:selectOneMenu id="roleList" value="#{userAcctRoleHome.selectedRole}" 
+					                 required="true" requiredMessage="Role is required."
+					                 >
+					    <s:selectItems value="#{userRoleList.resultList}"  var="userRole"
+					    			   label="#{userRole.role}" noSelectionLabel="--Select Role--">
+					    </s:selectItems>
+					    <s:convertEntity />
+					</h:selectOneMenu>
+		   		 </s:decorate>
+		        <div class="spaceNavPanel">
+		         <br />
+		   		 <br />
+		   		 <br />
+		            <a:commandButton id="save"
+		                          value="Save"
+		                         action="#{userAcctRoleHome.updateRole()}"
+		                         oncomplete ="Richfaces.hideModalPanel('editRolePopUp')"
+		                         reRender="userEditPanel"
+		                      >
+		            </a:commandButton>
+		            <s:button id="cancelEdit"
+		                      value="Cancel"
+		                     view="/admin/views/UserAcctEdit.xhtml"/>
+		        </div>
+		    </h:form>
+	    </rich:modalPanel>
+    </a:outputPanel>
+</ui:composition>
+
+

@@ -1,0 +1,98 @@
+<!-- 
+    ~ author : Sharath A.
+ -->
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:rich="http://richfaces.org/rich"
+      xmlns:a="http://richfaces.org/a4j"
+    template="/layout/template.xhtml">
+<ui:define name="body">
+    <h:form id="userAcctSearch" styleClass="edit">
+     <rich:panel >
+      <f:facet name="header">Add User </f:facet>
+		<h1>Add User</h1>
+            <rich:messages globalOnly="true" style="color:red;"/>
+               		<s:decorate id="usrNamSelectDispId" template="/layout/edit.xhtml">
+               					<ui:define name="label" >Name &#160;&#160;[Last,First Middle]</ui:define>
+					  			<h:inputText  id="employeeFullname" required="true" requiredMessage="Name is required." maxlength="26" size="100" value="#{userAcctHome.instance.name}"/>
+                                       <rich:suggestionbox var="employee" for="employeeFullname"  fetchValue="#{employee.embEmployeeName}" minChars="3" 
+                                       	suggestionAction="#{autoCompleteBean.getFullName}" nothingLabel="Nothing found" width="500"
+                                       	status="suggestionStatus">
+                                            <h:column >
+                                                <h:outputText value="#{employee.embEmployeeName}-#{employee.embEmployeeNumber}-#{employee.empEmpHomeDepartmentName}" />
+                                            </h:column>
+                                            <a:support id="getEmployeeFullname" event="onselect" ajaxSingle="true" action="#{userAcctDeptHome.assignHomeDepttoDept}"
+                                            			eventsQueue="default" reRender="ucsdDisplayId,DepartnameDispId,SelectdeptId">
+                                                    <f:setPropertyActionListener value="#{employee.embEmployeeNumber}" target="#{userAcctHome.instance.coreUserId}" />
+                                                    <f:setPropertyActionListener value="#{employee.empEmpHomeDepartmentName}" target="#{userAcctHome.instance.funcArea}" />
+                                             </a:support>                                                  
+                                             <rich:toolTip value="Please choose from the List of contacts or enter a new Contact" for="dup_contactName">
+                                             </rich:toolTip>
+                                       </rich:suggestionbox>
+					</s:decorate>
+					<br /><br /><br />
+					<h:outputText value=" * Enter first three or more letters in [Last,First Middle] format and select from drop down" style="color:red;"/>
+					<s:decorate id="ucsdDisplayId" template="/layout/display.xhtml">
+					<ui:define name="label"><h:outputText value="Employee ID" rendered="#{not empty userAcctHome.instance.coreUserId}"/></ui:define>
+                          <h:outputText id="employeeUcsdIdField" value="#{userAcctHome.instance.coreUserId}"/>
+                   </s:decorate>
+                   <s:decorate id="DepartnameDispId" template="/layout/display.xhtml">
+					<ui:define name="label"><h:outputText value="Home Department Name" rendered="#{not empty userAcctHome.instance.coreUserId}"/></ui:define>
+                          <h:outputText  id="employeeDepartmentField" value="#{userAcctHome.instance.funcArea}"  style="width:300px;"/>
+                   </s:decorate>
+                   
+                     <s:decorate id="SelectdeptId" template="/layout/edit.xhtml">
+						 <ui:define name="label">
+						   <h:outputText value="Select Department" rendered="#{not empty userAcctHome.instance.coreUserId}"/>
+						 </ui:define>
+                         <h:selectOneMenu id="SelectDepartment"  value="#{userAcctHome.departmentId}" rendered="#{not empty userAcctHome.instance.coreUserId}" required="true" requiredMessage="You must choose a Department">
+                          		<s:selectItems value="#{userAcctDeptHome.userAcctDeptsNotAssigned()}" var="depts" label="#{depts.deptLongName}" itemValue="#{depts.departmentId}"
+                          							 noSelectionLabel="Select Department"  />
+                          </h:selectOneMenu>
+                       </s:decorate>
+                   
+                   
+                  <s:decorate id="SelectRoleId" template="/layout/edit.xhtml">
+						 <ui:define name="label">Select Role</ui:define>
+                         <h:selectOneMenu id="SelectRole" required="true" requiredMessage="You must choose a Role" value="#{userAcctHome.roleId}">
+                          		<s:selectItems value="#{userAcctHome.roles}" var="role" label="#{role.role}" itemValue="#{role.roleId}"
+                          							 noSelectionLabel="Select Role"/>
+                          </h:selectOneMenu>
+                  </s:decorate>
+                 
+                  
+                  
+                  <div style="clear:both">
+                		<span class="required">*</span>
+                			required fields
+            	  </div>
+            	</rich:panel>
+                <s:div styleClass="actionButtons" rendered="#{empty from}">
+                   <h:commandButton id="create" value="Add User" action="#{userAcctHome.addUserAcctRoles()}">
+                    </h:commandButton>
+                    <s:button value="Cancel" includePageParams="false" view="/admin/views/UserList.xhtml"  propagation="end"/>
+                     <s:button value="Reset" includePageParams="false"  propagation="end"/>
+    		   </s:div>
+    				
+    </h:form>
+    <a:status id="suggestionStatus" forceId="true"/>
+     <a:status id="ajaxStatusId"
+   			onstart="#{rich:component('ajaxLoadingModalBox')}.show()"
+   			onstop="#{rich:component('ajaxLoadingModalBox')}.hide()" />
+
+      
+       <rich:modalPanel id="ajaxLoadingModalBox" minHeight="85" minWidth="95"
+ 			height="35" width="95" zindex="2000" style="background-color: #ffffff; width: 100%; border-width: 0px; border-color: #ffffff; 
+ 			border-style: solid; text-align: center;">
+			<h:panelGrid columns="1" style="border-width: 0px; text-align: center;">
+		 		<h:outputText value="please wait..." style="font-weight: bold;"/>
+		 		 <img src="/space/img/progress.gif" alt="please wait..." style="background-color: #ffffff;"/>
+	 		</h:panelGrid>
+	  </rich:modalPanel>
+     </ui:define>
+</ui:composition>

@@ -1,0 +1,175 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<e:workbook ignoreBlanks="false"
+	filename="journal_#{summary.quarterYear}"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:e="http://jboss.com/products/seam/excel"
+	xmlns:a="http://richfaces.org/a4j" 
+	template="/layout/template.xhtml">
+
+
+
+
+	<e:worksheet id="journalSummary"
+		name="non_single_#{summary.quarterYear}"
+		var="_nonsingle" value="#{summary.nonSingleJournals}"
+		>
+
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Seq No"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_nonsingle.sequenceNumber}" />
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Journal Type"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_nonsingle.journalType}" />
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Transaction Description"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_nonsingle.transactionDescription}" />
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="DOC Ref No"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_nonsingle.documentReferenceNo}"/>
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Amount"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_nonsingle.transactionAmount}" style="xls-format-mask:0.00"/>
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Debit/credit"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_nonsingle.debitCredit}"/>
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="COA Code"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_nonsingle.coaCode}"/>
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Index"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_nonsingle.indexCode}"/>
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Fund"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_nonsingle.fundCode}"/>
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Account"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_nonsingle.accountCode}"/>
+		</e:column>
+	</e:worksheet>
+
+
+	<e:worksheet id="journalSummarySingle"
+		name="single_#{summary.quarterYear}"
+		var="_single" value="#{summary.singleJournals}"
+		>
+
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Seq No"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_single.sequenceNumber}" />
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Journal Type"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_single.journalType}" />
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Transaction Description"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_single.transactionDescription}" />
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="DOC Ref No"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_single.documentReferenceNo}"/>
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Amount"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_single.transactionAmount}" style="xls-format-mask:0.00"/>
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Debit/credit"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_single.debitCredit}"/>
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="COA Code"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_single.coaCode}"/>
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Index"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_single.indexCode}"/>
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Fund"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_single.fundCode}"/>
+		</e:column>
+		<e:column autoSize="true">
+			<f:facet name="header">
+				<e:cell value="Account"
+					style="xls-background-color: GRAY_25; xls-font-bold:true; " />
+			</f:facet>
+			<e:cell value="#{_single.accountCode}"/>
+		</e:column>
+	</e:worksheet>
+
+</e:workbook>
+
+

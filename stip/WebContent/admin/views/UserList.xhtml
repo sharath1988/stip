@@ -1,0 +1,121 @@
+<!-- 
+    ~ author : Sharath A.
+ -->
+ <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:rich="http://richfaces.org/rich"
+      xmlns:a="http://richfaces.org/a4j"
+    template="/layout/template.xhtml">
+<ui:define name="body">
+<h:form id="userListform" styleClass="edit"> 
+
+
+<rich:panel style="height:600px;">
+               		<f:facet name="header">Search User </f:facet>	
+               						<s:decorate id="usrNamSelectDispId" template="/layout/edit.xhtml">
+			               					<ui:define name="label" >Name&#160;&#160;[Last,First Middle]</ui:define>
+								  			<h:inputText  id="employeeFullname" maxlength="26" size="100"/>
+			                                       <rich:suggestionbox var="employee" for="employeeFullname"  fetchValue="#{employee.name}" minChars="3" suggestionAction="#{userAcctHome.getNames}" nothingLabel="Nothing found" width="500">
+			                                            <h:column >
+			                                                <h:outputText value="#{employee.name}-#{employee.ucsdId}-#{employee.funcArea}" />
+			                                            </h:column>
+			                                            <a:support id="getEmployeeFullname" event="onselect" ajaxSingle="true" eventsQueue="default" reRender="userListSearch,usrNamSelectDispId">
+			                                                    <f:setPropertyActionListener value="#{employee.ucsdId}" target="#{userAcctList.userAcct.ucsdId}" />
+			                                             </a:support>                                                  
+			                                       </rich:suggestionbox>
+                                       </s:decorate>
+                                       <br /> <br /> <br /><h:outputText value="  * Enter first three or more letters in [Last,First Middle] format and select from drop down" style="color:red;"/>
+                                       <s:decorate id="deptnamesearchField" template="/layout/edit.xhtml">
+			               					<ui:define name="label" >Department Name</ui:define>
+								  			<h:inputText  id="deptNameId" size="50" value="#{userAcctList.userAcct.funcArea}"/>
+                                       </s:decorate>
+                                       <br /> <br /><br />
+		        						<h:commandButton id="create" value="Search User"   styleClass="searchuserListButton" />
+		        						<s:button  value="  Reset  " includePageParams="flase" propagation="end"/>
+                                          <br /><br />
+										    <rich:panel id="userListSearch">
+										        <f:facet name="header">
+										        	User Search Results (#{empty userAcctList.resultList ? 0 : (userAcctList.paginated ? userAcctList.resultCount : userAcctList.resultList.size)})
+										        </f:facet>
+										    	<h:outputText value="The user search returned no results."
+										               		  rendered="#{empty userAcctList.resultList}"/>
+										    	<rich:dataTable id="userAcctList"
+												                var="_userAcct"
+												              	value="#{userAcctList.resultList}"
+												           		rendered="#{not empty userAcctList.resultList}"
+												           		rows="14"
+												           		>
+												        <rich:column sortBy="#{_userAcct.ucsdId}">
+												            <f:facet name="header">
+												                <ui:include src="/layout/sort.xhtml">
+												                    <ui:param name="entityList" value="#{userAcctList}"/>
+												                    <ui:param name="propertyLabel" value="UCSD ID"/>
+												                    <ui:param name="propertyPath" value="userAcct.ucsdId"/>
+												                </ui:include>
+												            </f:facet>
+												            <h:outputText value="#{_userAcct.ucsdId}"/>
+												        </rich:column>
+												        <rich:column  sortBy="#{_userAcct.name}">
+												            <f:facet name="header">
+												                <ui:include src="/layout/sort.xhtml">
+												                    <ui:param name="entityList" value="#{userAcctList}"/>
+												                    <ui:param name="propertyLabel" value="Name"/>
+												                    <ui:param name="propertyPath" value="userAcct.name"/>
+												                </ui:include>
+												            </f:facet>
+												            <h:outputText value="#{_userAcct.name}"/>
+												        </rich:column>
+												        <rich:column sortBy="#{_userAcct.funcArea}">
+												            <f:facet name="header">
+												                <ui:include src="/layout/sort.xhtml">
+												                    <ui:param name="entityList" value="#{userAcctList}"/>
+												                    <ui:param name="propertyLabel" value="Functional Area"/>
+												                    <ui:param name="propertyPath" value="userAcct.funcArea"/>
+												                </ui:include>
+												            </f:facet>
+												            <h:outputText value="#{_userAcct.funcArea}"/>
+												       </rich:column>
+												       
+												       <rich:column styleClass="action">
+												            
+												            <f:facet name="header">Action</f:facet>
+												            
+												            <s:link view="/admin/views/#{empty from ? 'UserAcct' : from}.xhtml"
+												                   value="#{empty from ? 'View' : 'Select'}"
+												             propagation="#{empty from ? 'none' : 'default'}"
+												                      id="userAcctViewId">
+												                <f:param name="userAcctAccountId"
+												                        value="#{_userAcct.accountId}"/>
+												            </s:link>
+												           
+												            #{' '}
+												            
+												          	
+												            
+												             <s:link view="/admin/views/UserAcctEdit.xhtml"
+												                   	 value="Edit"
+												             		 propagation="none"
+												                     id="userAcctEdit1"
+												                	>
+												                	<f:param name="userAcctAccountId"
+												                        value="#{_userAcct.accountId}"/>
+												            </s:link>
+												            
+												        </rich:column>
+										         		<f:facet name="footer">
+															<rich:datascroller renderIfSinglePage="false" for="userAcctList"/>
+														</f:facet>
+										    		</rich:dataTable>
+										    		<s:button propagation="end" view="/admin/views/UserAcctList.xhtml" value="Add New User" includePageParams="false">
+										    		</s:button>
+										    		
+										      	 </rich:panel>
+									      </rich:panel>
+									  </h:form>
+								 </ui:define>
+</ui:composition>
