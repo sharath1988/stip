@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<datasources>
+   
+   <local-tx-datasource>
+       	<jndi-name>stipDatasource</jndi-name>
+	<connection-url>jdbc:mysql://som-dev4.ucsd.edu:3306/stip?autoReconnect=true</connection-url>
+	<driver-class>com.mysql.jdbc.Driver</driver-class>
+	<user-name>somdev4</user-name>
+	<password>Jan@2013</password>
+    <exception-sorter-class-name>org.jboss.resource.adapter.jdbc.vendor.MySQLExceptionSorter</exception-sorter-class-name>
+    <transaction-isolation>TRANSACTION_READ_COMMITTED</transaction-isolation>
+    <new-connection-sql>SELECT 1</new-connection-sql>
+    <check-valid-connection-sql>SELECT 1</check-valid-connection-sql>
+    <metadata>
+       <type-mapping>mySQL</type-mapping>
+    </metadata>
+	</local-tx-datasource>
+   
+</datasources>
